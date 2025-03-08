@@ -17,6 +17,7 @@ import { Session } from './sessions/entities/session.entity';
 import { GradesModule } from './grades/grades.module';
 import { Grade } from './grades/entities/grade.entity';
 import { Subscription } from './subscriptions/entities/subscription.entity';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [

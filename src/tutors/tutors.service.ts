@@ -19,7 +19,7 @@ export class TutorsService {
   }
 
   findOneByEmail(email: string) {
-    return this.tutorsRepository.findBy({ email });
+    return this.tutorsRepository.findOneBy({ email });
   }
 
   update(id: number, tutorInformations: Partial<Tutor>) {
