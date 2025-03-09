@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Tutor } from './entities/tutor.entity';
+import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
+import { CreateTutorDto } from './dto/create-tutor.dto';
+import { Tutor } from './entities/tutor.entity';
 
 @Injectable()
 export class TutorsService {
@@ -10,8 +12,15 @@ export class TutorsService {
     private tutorsRepository: Repository<Tutor>,
   ) {}
 
-  create(tutor: Tutor) {
-    return this.tutorsRepository.save(tutor);
+  async create(createTutorDto: CreateTutorDto) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(createTutorDto.password, salt);
+    const admin = this.tutorsRepository.create({
+      ...createTutorDto,
+      password: hashedPassword,
+    });
+
+    return this.tutorsRepository.save(admin);
   }
 
   findAll() {
@@ -19,7 +28,7 @@ export class TutorsService {
   }
 
   findOneByEmail(email: string) {
-    return this.tutorsRepository.findBy({ email });
+    return this.tutorsRepository.findOneBy({ email });
   }
 
   update(id: number, tutorInformations: Partial<Tutor>) {

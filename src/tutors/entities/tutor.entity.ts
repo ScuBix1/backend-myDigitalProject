@@ -1,4 +1,5 @@
 import { Admin } from 'src/admins/entities/admin.entity';
+import { Student } from 'src/students/entities/student.entity';
 import {
   Column,
   Entity,
@@ -9,7 +10,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Subscription } from '../../subscriptions/entities/subscription.entity';
-import { Student } from 'src/students/entities/student.entity';
 
 @Entity()
 export class Tutor {
@@ -26,12 +26,14 @@ export class Tutor {
   dob: Date;
 
   @Column()
-  name: string;
+  lastname: string;
 
   @Column()
-  firstName: string;
+  firstname: string;
 
-  @ManyToOne(() => Admin, (admin) => admin.tutors)
+  @ManyToOne(() => Admin, (admin) => admin.tutors, {
+    onDelete: 'CASCADE',
+  })
   admin: Admin;
 
   @ManyToMany(() => Subscription, (subscription) => subscription.tutors)

@@ -1,22 +1,22 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from './auth/auth.module';
-import { TutorsModule } from './tutors/tutors.module';
-import { Tutor } from './tutors/entities/tutor.entity';
-import { StudentsService } from './students/students.service';
-import { StudentsModule } from './students/students.module';
-import { Student } from './students/entities/student.entity';
 import { AdminsModule } from './admins/admins.module';
-import { SubscriptionsModule } from './subscriptions/subscriptions.module';
-import { SessionsModule } from './sessions/sessions.module';
-import { GamesModule } from './games/games.module';
 import { Admin } from './admins/entities/admin.entity';
+import { AuthModule } from './auth/auth.module';
 import { Game } from './games/entities/game.entity';
-import { Session } from './sessions/entities/session.entity';
-import { GradesModule } from './grades/grades.module';
+import { GamesModule } from './games/games.module';
 import { Grade } from './grades/entities/grade.entity';
+import { GradesModule } from './grades/grades.module';
+import { Session } from './sessions/entities/session.entity';
+import { SessionsModule } from './sessions/sessions.module';
+import { Student } from './students/entities/student.entity';
+import { StudentsModule } from './students/students.module';
+import { StudentsService } from './students/students.service';
 import { Subscription } from './subscriptions/entities/subscription.entity';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { Tutor } from './tutors/entities/tutor.entity';
+import { TutorsModule } from './tutors/tutors.module';
 
 @Module({
   imports: [
