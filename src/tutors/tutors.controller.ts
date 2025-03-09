@@ -1,24 +1,23 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { TutorsService } from './tutors.service';
 import { CreateTutorDto } from './dto/create-tutor.dto';
-import { UpdateTutorDto } from './dto/update-tutor.dto';
 import { Tutor } from './entities/tutor.entity';
+import { TutorsService } from './tutors.service';
 
 @Controller('tutors')
 export class TutorsController {
   constructor(private readonly tutorsService: TutorsService) {}
 
-  @Post()
-  create(@Body() tutorInformations: Tutor) {
-    return this.tutorsService.create(tutorInformations);
+  @Post('sign-up')
+  create(@Body() createTutorDto: CreateTutorDto) {
+    return this.tutorsService.create(createTutorDto);
   }
 
   @Get()

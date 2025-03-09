@@ -1,16 +1,22 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './jwt.strategy';
+import { AdminsModule } from 'src/admins/admins.module';
+import { AdminsService } from 'src/admins/admins.service';
+import { StudentsModule } from 'src/students/students.module';
+import { StudentsService } from 'src/students/students.service';
 import { TutorsModule } from 'src/tutors/tutors.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
     TutorsModule,
     PassportModule,
+    AdminsModule,
+    StudentsModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -22,7 +28,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
     }),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, AdminsService, StudentsService],
   controllers: [AuthController],
 })
 export class AuthModule {}

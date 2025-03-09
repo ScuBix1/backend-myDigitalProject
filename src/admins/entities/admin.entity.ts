@@ -7,13 +7,19 @@ export class Admin {
   id: number;
 
   @Column()
-  manageTutors: boolean;
+  email: string;
 
   @Column()
-  manageSubscriptions: boolean;
+  password: string;
 
   @Column()
-  manageGames: boolean;
+  manage_tutors: boolean;
+
+  @Column()
+  manage_subscriptions: boolean;
+
+  @Column()
+  manage_games: boolean;
 
   @OneToMany(() => Tutor, (tutor) => tutor.id)
   tutors: Tutor[];
