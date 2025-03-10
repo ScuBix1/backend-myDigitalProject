@@ -1,0 +1,460 @@
+openapi: 3.0.0
+paths:
+  /auth/admin-login:
+    post:
+      operationId: AuthController_adminLogin
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: &ref_0
+        - Auth
+  /auth/tutor-login:
+    post:
+      operationId: AuthController_tutorLogin
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_0
+  /auth/student-login:
+    post:
+      operationId: AuthController_studentLogin
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_0
+  /tutors/sign-up:
+    post:
+      operationId: TutorsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTutorDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_1
+        - Tutors
+  /tutors:
+    get:
+      operationId: TutorsController_findOne
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
+  /admins/sign-up:
+    post:
+      operationId: AdminsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAdminDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - Admins
+  /students/sign-up:
+    post:
+      operationId: StudentsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStudentDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_2
+        - Students
+  /students:
+    get:
+      operationId: StudentsController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+  /students/{id}:
+    patch:
+      operationId: StudentsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStudentDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+    delete:
+      operationId: StudentsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+  /subscriptions:
+    post:
+      operationId: SubscriptionsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_3
+        - Subscriptions
+    get:
+      operationId: SubscriptionsController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /subscriptions/{id}:
+    get:
+      operationId: SubscriptionsController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    patch:
+      operationId: SubscriptionsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubscriptionDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    delete:
+      operationId: SubscriptionsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /sessions:
+    post:
+      operationId: SessionsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_4
+        - Sessions
+    get:
+      operationId: SessionsController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /sessions/{id}:
+    get:
+      operationId: SessionsController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+    patch:
+      operationId: SessionsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSessionDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+    delete:
+      operationId: SessionsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /games:
+    post:
+      operationId: GamesController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGameDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_5
+        - Games
+    get:
+      operationId: GamesController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /games/{id}:
+    get:
+      operationId: GamesController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+    patch:
+      operationId: GamesController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGameDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+    delete:
+      operationId: GamesController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /grades:
+    post:
+      operationId: GradesController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGradeDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_6
+        - Grades
+    get:
+      operationId: GradesController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /grades/{id}:
+    get:
+      operationId: GradesController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+    patch:
+      operationId: GradesController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGradeDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+    delete:
+      operationId: GradesController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+info:
+  title: Math&Magique
+  description: Description de l'API de Math&Magique
+  version: '1.0'
+  contact: {}
+tags:
+  - name: Maths
+    description: ''
+servers: []
+components:
+  schemas:
+    CreateTutorDto:
+      type: object
+      properties:
+        email:
+          type: string
+          example: email@email.fr
+          description: Email du tuteur
+        password:
+          type: string
+          example: Azertyuiop123456789!
+          description: >-
+            Mot de passe avec minimum 8 caractères, 1 chiffre, 1 caractère
+            spécial, 1 majuscule, 1 minuscule 
+        dob:
+          format: date-time
+          type: string
+          example: 2001/02/17
+          description: Date de naissance
+        lastname:
+          type: string
+          example: Doe
+          description: Nom de la personne
+        firstname:
+          type: string
+          example: John
+          description: Prénom de la personne
+        adminId:
+          type: string
+          example: '1'
+          description: Id de l'admin associé
+      required:
+        - email
+        - password
+        - dob
+        - lastname
+        - firstname
+        - adminId
+    CreateAdminDto:
+      type: object
+      properties: {}
+    CreateStudentDto:
+      type: object
+      properties: {}
+    UpdateStudentDto:
+      type: object
+      properties: {}
+    CreateSubscriptionDto:
+      type: object
+      properties: {}
+    UpdateSubscriptionDto:
+      type: object
+      properties: {}
+    CreateSessionDto:
+      type: object
+      properties: {}
+    UpdateSessionDto:
+      type: object
+      properties: {}
+    CreateGameDto:
+      type: object
+      properties: {}
+    UpdateGameDto:
+      type: object
+      properties: {}
+    CreateGradeDto:
+      type: object
+      properties: {}
+    UpdateGradeDto:
+      type: object
+      properties: {}
