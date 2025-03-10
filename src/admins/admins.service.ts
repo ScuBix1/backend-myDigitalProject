@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { isPresent } from 'src/constants/functions/isPresent';
 import { Repository } from 'typeorm';
 import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { Admin } from './entities/admin.entity';
 
 @Injectable()
@@ -15,8 +18,15 @@ export class AdminsService {
   ) {}
 
   async create(createAdminDto: CreateAdminDto): Promise<Admin> {
+    const existingAdmin = await this.adminsRepository.findOneBy({});
+
+    if (existingAdmin) {
+      throw new UnauthorizedException('Un administrateur existe déjà');
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(createAdminDto.password, salt);
+
     const admin = this.adminsRepository.create({
       ...createAdminDto,
       password: hashedPassword,
@@ -35,21 +45,5 @@ export class AdminsService {
     }
 
     throw new NotFoundException('Utilisateur non trouvé');
-  }
-
-  findAll() {
-    return `This action returns all admins`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} admin`;
-  }
-
-  update(id: number, updateAdminDto: UpdateAdminDto) {
-    return `This action updates a #${id} admin`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} admin`;
   }
 }
