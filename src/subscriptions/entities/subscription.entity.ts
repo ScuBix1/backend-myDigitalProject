@@ -3,7 +3,7 @@ import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
+  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -30,6 +30,10 @@ export class Subscription {
   end_date: Date;
 
   @ManyToMany(() => Tutor, (tutor) => tutor.subscriptions)
-  @JoinColumn({ name: 'tutor_id' })
+  @JoinTable({
+    name: 'tutor_subscription',
+    joinColumn: { name: 'subscription_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tutor_id', referencedColumnName: 'id' },
+  })
   tutors: Tutor[];
 }

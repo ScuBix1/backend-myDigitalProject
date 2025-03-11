@@ -463,19 +463,123 @@ components:
         - password
     CreateStudentDto:
       type: object
-      properties: {}
+      properties:
+        lastname:
+          type: string
+          example: Doe
+          description: Nom de l'étudiant
+        firstname:
+          type: string
+          example: John
+          description: Prénom de l'étudiant
+        username:
+          type: string
+          example: johndoe123
+          description: Nom d'utilisateur unique
+        password:
+          type: string
+          example: Mypassword123!
+          description: Mot de passe sécurisé
+        start_hour:
+          type: string
+          example: '2025-03-11T08:00:00.000Z'
+          description: Heure de début de session (format ISO)
+        duration:
+          type: number
+          example: 60
+          description: Durée de la session en minutes
+        tutor_id:
+          type: number
+          example: 1
+          description: ID du tuteur associé à l'étudiant
+        grade_id:
+          type: number
+          example: 2
+          description: ID du niveau scolaire de l'étudiant
+        sessions_id:
+          example:
+            - 3
+            - 4
+          description: Liste des IDs des sessions associées
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          example: '2025-03-11T08:00:00.000Z'
+          description: Date de création de l'étudiant
+      required:
+        - lastname
+        - firstname
+        - username
+        - password
+        - start_hour
+        - duration
+        - tutor_id
+        - grade_id
+        - sessions_id
+        - created_at
     UpdateStudentDto:
       type: object
       properties: {}
     CreateSubscriptionDto:
       type: object
-      properties: {}
+      properties:
+        price:
+          type: number
+          example: 19.99
+          description: Prix de l'abonnement
+        type:
+          type: string
+          example: INDIVIDUAL
+          enum:
+            - individual
+            - professional
+          description: Type d'abonnement
+        start_date:
+          type: string
+          example: '2025-03-11T00:00:00.000Z'
+          description: Date de début (format ISO)
+        end_date:
+          type: string
+          example: '2026-03-11T00:00:00.000Z'
+          description: Date de fin (format ISO)
+        tutors_id:
+          example:
+            - 1
+            - 2
+          description: Liste des IDs des tuteurs associés
+          type: array
+          items:
+            type: string
+      required:
+        - price
+        - type
+        - start_date
+        - end_date
+        - tutors_id
     UpdateSubscriptionDto:
       type: object
       properties: {}
     CreateSessionDto:
       type: object
-      properties: {}
+      properties:
+        score:
+          type: number
+          example: 85
+          description: Score de l'utilisateur (valeur entre 0 et 100)
+        studentId:
+          type: number
+          example: 1
+          description: ID de l'étudiant associé à cette session
+        gameId:
+          type: number
+          example: 2
+          description: ID du jeu associé à cette session
+      required:
+        - score
+        - studentId
+        - gameId
     UpdateSessionDto:
       type: object
       properties: {}
