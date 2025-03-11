@@ -3,6 +3,7 @@ import { Student } from 'src/students/entities/student.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -34,12 +35,21 @@ export class Tutor {
   @ManyToOne(() => Admin, (admin) => admin.tutors, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'admin_id' })
   admin: Admin;
 
   @ManyToMany(() => Subscription, (subscription) => subscription.tutors)
-  @JoinTable({ name: 'tutor_subscription' })
+  @JoinTable({
+    name: 'tutor_subscription',
+    joinColumn: { name: 'tutor_id', referencedColumnName: 'id' },
+    inverseJoinColumn: {
+      name: 'subscription_id',
+      referencedColumnName: 'id',
+    },
+  })
   subscriptions: Subscription[];
 
   @OneToMany(() => Student, (student) => student.id)
+  @JoinColumn({ name: 'student_id' })
   students: Student[];
 }

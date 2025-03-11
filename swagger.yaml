@@ -427,7 +427,40 @@ components:
         - adminId
     CreateAdminDto:
       type: object
-      properties: {}
+      properties:
+        manage_tutors:
+          type: boolean
+          example: 'true'
+          description: Autorisation pour modifier les tuteurs
+        manage_subscriptions:
+          type: boolean
+          example: 'true'
+          description: Autorisation pour modifier les abonnements
+        manage_games:
+          type: boolean
+          example: 'true'
+          description: Autorisation pour modifier les jeux
+        created_at:
+          format: date-time
+          type: string
+          example: 2025/02/17
+          description: Date de création
+        email:
+          type: string
+          example: email@email.fr
+          description: Email de l'admin
+        password:
+          type: string
+          example: Azertyuiop123456789!
+          description: >-
+            Mot de passe avec minimum 8 caractères, 1 chiffre, 1 caractère
+            spécial, 1 majuscule, 1 minuscule 
+      required:
+        - manage_tutors
+        - manage_subscriptions
+        - manage_games
+        - email
+        - password
     CreateStudentDto:
       type: object
       properties: {}
@@ -446,15 +479,48 @@ components:
     UpdateSessionDto:
       type: object
       properties: {}
+    Grades:
+      type: string
+      enum:
+        - cp
+        - ce1
+        - ce2
+        - cm1
+        - cm2
+      description: Niveau de classe de l’élève
     CreateGameDto:
       type: object
-      properties: {}
+      properties:
+        name:
+          type: string
+          example: Morpion
+          description: Nom du jeu
+        path:
+          type: string
+          example: /src/jeu/nom
+          description: Chemin vers l'emplacement du jeu
+        grade:
+          example: cm1
+          description: Niveau de classe de l’élève
+          allOf:
+            - $ref: '#/components/schemas/Grades'
+      required:
+        - name
+        - path
+        - grade
     UpdateGameDto:
       type: object
       properties: {}
     CreateGradeDto:
       type: object
-      properties: {}
+      properties:
+        type:
+          example: cm1
+          description: Niveau de classe de l’élève
+          allOf:
+            - $ref: '#/components/schemas/Grades'
+      required:
+        - type
     UpdateGradeDto:
       type: object
       properties: {}

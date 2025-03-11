@@ -4,10 +4,10 @@ import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Timestamp,
 } from 'typeorm';
 
 @Entity()
@@ -34,11 +34,14 @@ export class Student {
   duration: number;
 
   @ManyToOne(() => Tutor, (tutor) => tutor.students)
+  @JoinColumn({ name: 'tutor_id' })
   tutor: Tutor;
 
   @ManyToOne(() => Grade, (grade) => grade.students)
+  @JoinColumn({ name: 'grade_id' })
   grade: Grade;
 
   @OneToMany(() => Session, (session) => session.id)
+  @JoinColumn({ name: 'session_id' })
   sessions: Session[];
 }
