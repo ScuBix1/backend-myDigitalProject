@@ -28,25 +28,86 @@ paths:
   /tutors/sign-up:
     post:
       operationId: TutorsController_create
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTutorDto'
+      parameters:
+        - name: email
+          required: true
+          in: query
+          description: Email du tuteur
+          schema:
+            example: email@email.fr
+            type: string
+        - name: password
+          required: true
+          in: query
+          description: >-
+            Mot de passe avec minimum 8 caractères, 1 chiffre, 1 caractère
+            spécial, 1 majuscule, 1 minuscule 
+          schema:
+            example: Azertyuiop123456789!
+            type: string
+        - name: dob
+          required: true
+          in: query
+          description: Date de naissance
+          schema:
+            format: date-time
+            example: 2001/02/17
+            type: string
+        - name: lastname
+          required: true
+          in: query
+          description: Nom de la personne
+          schema:
+            example: Doe
+            type: string
+        - name: firstname
+          required: true
+          in: query
+          description: Prénom de la personne
+          schema:
+            example: John
+            type: string
+        - name: adminId
+          required: true
+          in: query
+          description: Id de l'admin associé
+          schema:
+            example: '1'
+            type: string
       responses:
         '201':
-          description: ''
+          description: Le tuteur a été créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTutorDto'
+        '400':
+          description: Les informations saisies sont invalides
+      summary: Inscription d'un tuteur
       tags: &ref_1
         - Tutors
   /tutors:
     get:
       operationId: TutorsController_findOne
-      parameters: []
+      parameters:
+        - name: email
+          required: true
+          in: query
+          description: Email du tuteur recherché
+          schema:
+            type: string
       responses:
         '200':
-          description: ''
+          description: Retourne un tuteur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tutor'
+        '400':
+          description: L'email du tuteur est invalide
+        '404':
+          description: Le tuteur avec l'email demandé n'est pas trouvé
+      summary: Récupère un tuteur en fonction de son email
       tags: *ref_1
   /admins/sign-up:
     post:
@@ -60,22 +121,84 @@ paths:
               $ref: '#/components/schemas/CreateAdminDto'
       responses:
         '201':
-          description: ''
+          description: L'administrateur a été créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAdminDto'
+      summary: Inscription d'un administrateur
       tags:
         - Admins
   /students/sign-up:
     post:
       operationId: StudentsController_create
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateStudentDto'
+      parameters:
+        - name: lastname
+          required: true
+          in: query
+          description: Nom de l'étudiant
+          schema:
+            example: Doe
+            type: string
+        - name: firstname
+          required: true
+          in: query
+          description: Prénom de l'étudiant
+          schema:
+            example: John
+            type: string
+        - name: username
+          required: true
+          in: query
+          description: Nom d'utilisateur unique
+          schema:
+            example: johndoe123
+            type: string
+        - name: password
+          required: true
+          in: query
+          description: Mot de passe sécurisé
+          schema:
+            example: Mypassword123!
+            type: string
+        - name: start_hour
+          required: true
+          in: query
+          description: Heure de début de session (format ISO)
+          schema:
+            example: '2025-03-11T08:00:00.000Z'
+            type: string
+        - name: duration
+          required: true
+          in: query
+          description: Durée de la session en minutes
+          schema:
+            example: 60
+            type: number
+        - name: tutor_id
+          required: true
+          in: query
+          description: ID du tuteur associé à l'étudiant
+          schema:
+            example: 1
+            type: number
+        - name: grade_id
+          required: true
+          in: query
+          description: ID du niveau scolaire de l'étudiant
+          schema:
+            example: 2
+            type: number
       responses:
         '201':
-          description: ''
+          description: L'étudiant a été créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateStudentDto'
+        '400':
+          description: Les informations saisies sont invalides
+      summary: Inscription d'un étudiant
       tags: &ref_2
         - Students
   /students:
@@ -425,6 +548,48 @@ components:
         - lastname
         - firstname
         - adminId
+    Tutor:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+          description: ID du tuteur
+        email:
+          type: string
+          example: email@email.fr
+          description: Email du tuteur
+        password:
+          type: string
+          example: Azertyuiop123456789!
+          description: >-
+            Mot de passe du tuteur (1 majuscule, 1 minuscule, 8 caractères
+            minimum, 1 caractère spéciale) 
+        dob:
+          format: date-time
+          type: string
+          example: 20001/02/17
+          description: Date de naissance du tuteur
+        lastname:
+          type: string
+          example: Doe
+          description: Nom du tuteur
+        firstname:
+          type: string
+          example: John
+          description: Prénom du tuteur
+        admin:
+          type: number
+          example: 3
+          description: ID de l'administrateur qui à les droits sur le tuteur
+      required:
+        - id
+        - email
+        - password
+        - dob
+        - lastname
+        - firstname
+        - admin
     CreateAdminDto:
       type: object
       properties:
@@ -440,11 +605,6 @@ components:
           type: boolean
           example: 'true'
           description: Autorisation pour modifier les jeux
-        created_at:
-          format: date-time
-          type: string
-          example: 2025/02/17
-          description: Date de création
         email:
           type: string
           example: email@email.fr
@@ -496,18 +656,6 @@ components:
           type: number
           example: 2
           description: ID du niveau scolaire de l'étudiant
-        sessions_id:
-          example:
-            - 3
-            - 4
-          description: Liste des IDs des sessions associées
-          type: array
-          items:
-            type: string
-        created_at:
-          type: string
-          example: '2025-03-11T08:00:00.000Z'
-          description: Date de création de l'étudiant
       required:
         - lastname
         - firstname
@@ -517,8 +665,6 @@ components:
         - duration
         - tutor_id
         - grade_id
-        - sessions_id
-        - created_at
     UpdateStudentDto:
       type: object
       properties: {}

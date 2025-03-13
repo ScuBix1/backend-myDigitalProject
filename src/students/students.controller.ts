@@ -6,7 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentsService } from './students.service';
@@ -16,7 +22,15 @@ export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
   @Post('sign-up')
-  create(@Body() createStudentDto: CreateStudentDto) {
+  @ApiOperation({ summary: "Inscription d'un étudiant" })
+  @ApiCreatedResponse({
+    description: "L'étudiant a été créé avec succès",
+    type: CreateStudentDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Les informations saisies sont invalides',
+  })
+  create(@Query() createStudentDto: CreateStudentDto) {
     return this.studentsService.create(createStudentDto);
   }
 

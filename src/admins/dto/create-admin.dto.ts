@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsDate,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-} from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 
 export class CreateAdminDto {
@@ -41,16 +35,6 @@ export class CreateAdminDto {
 
   @IsOptional()
   tutors?: Tutor[];
-
-  @ApiProperty({
-    example: '2025/02/17',
-    description: 'Date de création',
-    type: Date,
-    required: false,
-  })
-  @IsDate()
-  @IsOptional()
-  created_at?: Date;
 
   @ApiProperty({
     example: 'email@email.fr',

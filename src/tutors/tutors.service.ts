@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Admin } from 'src/admins/entities/admin.entity';
@@ -23,6 +27,7 @@ export class TutorsService {
         'Création impossible, aucun administrateur trouvé',
       );
     }
+    console.log(existingAdmin);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(createTutorDto.password, salt);
     const admin = this.tutorsRepository.create({
@@ -33,7 +38,23 @@ export class TutorsService {
     return this.tutorsRepository.save(admin);
   }
 
-  findOneByEmail(email: string) {
-    return this.tutorsRepository.findOneBy({ email });
+  async findOneByEmail(email: string) {
+    const existingAdmin = await this.adminsRepository.findOneBy({});
+
+    if (!existingAdmin) {
+      throw new UnauthorizedException(
+        'Création impossible, aucun administrateur trouvé',
+      );
+    }
+
+    const tutor = await this.tutorsRepository.findOneBy({ email });
+
+    if (!tutor) {
+      throw new NotFoundException(
+        "Le tuteur avec l'email demandé n'est pas trouvé",
+      );
+    }
+
+    return { ...tutor, admin_id: existingAdmin.id };
   }
 }

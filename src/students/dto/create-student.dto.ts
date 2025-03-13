@@ -4,7 +4,6 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -60,20 +59,4 @@ export class CreateStudentDto {
   @IsNotEmpty()
   @IsInt()
   grade_id: number;
-
-  @ApiProperty({
-    example: [3, 4],
-    description: 'Liste des IDs des sessions associées',
-  })
-  @IsOptional()
-  @IsInt({ each: true })
-  sessions_id?: number[];
-
-  @ApiProperty({
-    example: '2025-03-11T08:00:00.000Z',
-    description: "Date de création de l'étudiant",
-  })
-  @IsOptional()
-  @IsDateString()
-  created_at?: string;
 }
