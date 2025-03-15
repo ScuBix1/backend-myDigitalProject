@@ -16,7 +16,9 @@ export class Session {
   @Column()
   score: number;
 
-  @ManyToOne(() => Student, (student) => student.sessions)
+  @ManyToOne(() => Student, (student) => student.sessions, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'student_id' })
   student: Student;
 

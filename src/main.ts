@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
@@ -6,6 +7,14 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Math&Magique')
@@ -16,15 +25,12 @@ async function bootstrap() {
 
   const documentFactory = SwaggerModule.createDocument(app, config);
 
-  console.log('📌 Swagger Document:', documentFactory);
-
   if (documentFactory) {
     writeFileSync('./swagger.json', JSON.stringify(documentFactory, null, 2));
     writeFileSync('./swagger.yaml', yaml.dump(documentFactory));
-    console.log('✅ Swagger documentation générée en JSON et YAML');
   } else {
     console.error(
-      '❌ Erreur : `document` est undefined, vérifie la configuration Swagger.',
+      'Erreur : `document` est undefined, vérifie la configuration Swagger.',
     );
   }
 

@@ -28,52 +28,13 @@ paths:
   /tutors/sign-up:
     post:
       operationId: TutorsController_create
-      parameters:
-        - name: email
-          required: true
-          in: query
-          description: Email du tuteur
-          schema:
-            example: email@email.fr
-            type: string
-        - name: password
-          required: true
-          in: query
-          description: >-
-            Mot de passe avec minimum 8 caractères, 1 chiffre, 1 caractère
-            spécial, 1 majuscule, 1 minuscule 
-          schema:
-            example: Azertyuiop123456789!
-            type: string
-        - name: dob
-          required: true
-          in: query
-          description: Date de naissance
-          schema:
-            format: date-time
-            example: 2001/02/17
-            type: string
-        - name: lastname
-          required: true
-          in: query
-          description: Nom de la personne
-          schema:
-            example: Doe
-            type: string
-        - name: firstname
-          required: true
-          in: query
-          description: Prénom de la personne
-          schema:
-            example: John
-            type: string
-        - name: adminId
-          required: true
-          in: query
-          description: Id de l'admin associé
-          schema:
-            example: '1'
-            type: string
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTutorDto'
       responses:
         '201':
           description: Le tuteur a été créé avec succès
@@ -537,8 +498,8 @@ components:
           type: string
           example: John
           description: Prénom de la personne
-        adminId:
-          type: string
+        admin_id:
+          type: number
           example: '1'
           description: Id de l'admin associé
       required:
@@ -547,7 +508,7 @@ components:
         - dob
         - lastname
         - firstname
-        - adminId
+        - admin_id
     Tutor:
       type: object
       properties:

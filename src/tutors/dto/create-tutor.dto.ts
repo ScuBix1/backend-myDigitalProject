@@ -11,8 +11,8 @@ export class CreateTutorDto {
     type: String,
     required: true,
   })
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: "L'email est invalide" })
+  @IsNotEmpty({ message: "L'email est obligatoire" })
   email: string;
 
   @ApiProperty({
@@ -55,11 +55,11 @@ export class CreateTutorDto {
   @ApiProperty({
     example: '1',
     description: "Id de l'admin associé",
-    type: String,
+    type: Admin['id'],
     required: true,
   })
   @IsNotEmpty()
-  adminId: Admin;
+  admin_id: number;
 
   subscriptions: Subscription[];
 

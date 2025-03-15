@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -23,7 +23,7 @@ export class TutorsController {
     type: CreateTutorDto,
   })
   @Post('sign-up')
-  create(@Query() createTutorDto: CreateTutorDto) {
+  create(@Body() createTutorDto: CreateTutorDto) {
     return this.tutorsService.create(createTutorDto);
   }
 

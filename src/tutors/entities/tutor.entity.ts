@@ -65,13 +65,13 @@ export class Tutor {
     example: 3,
     description: "ID de l'administrateur qui à les droits sur le tuteur",
   })
-  @ManyToOne(() => Admin, (admin) => admin.tutors, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Admin, (admin) => admin.tutors)
   @JoinColumn({ name: 'admin_id' })
   admin: Admin;
 
-  @ManyToMany(() => Subscription, (subscription) => subscription.tutors)
+  @ManyToMany(() => Subscription, (subscription) => subscription.tutors, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'tutor_subscription',
     joinColumn: { name: 'tutor_id', referencedColumnName: 'id' },
@@ -82,7 +82,7 @@ export class Tutor {
   })
   subscriptions: Subscription[];
 
-  @OneToMany(() => Student, (student) => student.id)
+  @OneToMany(() => Student, (student) => student.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'student_id' })
   students: Student[];
 }
