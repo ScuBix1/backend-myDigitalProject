@@ -1,8 +1,10 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { Student } from 'src/students/entities/student.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -13,33 +15,74 @@ import { Subscription } from '../../subscriptions/entities/subscription.entity';
 
 @Entity()
 export class Tutor {
+  @ApiProperty({ type: Number, example: 1, description: 'ID du tuteur' })
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({
+    type: String,
+    example: 'email@email.fr',
+    description: 'Email du tuteur',
+  })
   @Column()
   email: string;
 
+  @ApiProperty({
+    type: String,
+    example: 'Azertyuiop123456789!',
+    description:
+      'Mot de passe du tuteur (1 majuscule, 1 minuscule, 8 caractères minimum, 1 caractère spéciale) ',
+  })
   @Column()
   password: string;
 
+  @ApiProperty({
+    type: Date,
+    example: '20001/02/17',
+    description: 'Date de naissance du tuteur',
+  })
   @Column()
   dob: Date;
 
+  @ApiProperty({
+    type: String,
+    example: 'Doe',
+    description: 'Nom du tuteur',
+  })
   @Column()
   lastname: string;
 
+  @ApiProperty({
+    type: String,
+    example: 'John',
+    description: 'Prénom du tuteur',
+  })
   @Column()
   firstname: string;
 
+  @ApiProperty({
+    type: Number,
+    example: 3,
+    description: "ID de l'administrateur qui à les droits sur le tuteur",
+  })
   @ManyToOne(() => Admin, (admin) => admin.tutors, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'admin_id' })
   admin: Admin;
 
   @ManyToMany(() => Subscription, (subscription) => subscription.tutors)
-  @JoinTable({ name: 'tutor_subscription' })
+  @JoinTable({
+    name: 'tutor_subscription',
+    joinColumn: { name: 'tutor_id', referencedColumnName: 'id' },
+    inverseJoinColumn: {
+      name: 'subscription_id',
+      referencedColumnName: 'id',
+    },
+  })
   subscriptions: Subscription[];
 
   @OneToMany(() => Student, (student) => student.id)
+  @JoinColumn({ name: 'student_id' })
   students: Student[];
 }

@@ -1,5 +1,11 @@
 import { Tutor } from 'src/tutors/entities/tutor.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Admin {
@@ -22,5 +28,6 @@ export class Admin {
   manage_games: boolean;
 
   @OneToMany(() => Tutor, (tutor) => tutor.id)
+  @JoinColumn({ name: 'tutor_id' })
   tutors: Tutor[];
 }

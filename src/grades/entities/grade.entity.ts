@@ -1,6 +1,12 @@
 import { Grades } from 'src/constants/enums/grades.enum';
 import { Student } from 'src/students/entities/student.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Grade {
@@ -14,6 +20,7 @@ export class Grade {
   })
   type: Grades;
 
-  @OneToMany(() => Student, (student) => student.id)
+  @OneToMany(() => Student, (student) => student.grade)
+  @JoinColumn({ name: 'student_id' })
   students: Student[];
 }
