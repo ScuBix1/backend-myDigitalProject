@@ -1,9 +1,16 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
 import { AdminsService } from './admins.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 
 @Controller('admins')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AdminsController {
   constructor(private readonly adminsService: AdminsService) {}
 

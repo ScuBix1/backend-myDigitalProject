@@ -782,6 +782,10 @@
   "servers": [],
   "components": {
     "schemas": {
+      "Admin": {
+        "type": "object",
+        "properties": {}
+      },
       "CreateTutorDto": {
         "type": "object",
         "properties": {
@@ -812,9 +816,18 @@
             "description": "Prénom de la personne"
           },
           "admin_id": {
-            "type": "number",
             "example": "1",
-            "description": "Id de l'admin associé"
+            "description": "Id de l'admin associé",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Admin"
+              }
+            ]
+          },
+          "customer_id": {
+            "type": "string",
+            "example": "cus_N1aB2C3D4E5F6G",
+            "description": "ID du client stripe associé au tuteur"
           }
         },
         "required": [
@@ -823,7 +836,8 @@
           "dob",
           "lastname",
           "firstname",
-          "admin_id"
+          "admin_id",
+          "customer_id"
         ]
       },
       "Tutor": {
@@ -860,6 +874,11 @@
             "example": "John",
             "description": "Prénom du tuteur"
           },
+          "customer_id": {
+            "type": "string",
+            "example": "cus_N1aB2C3D4E5F6G",
+            "description": "ID du client stripe associé au tuteur"
+          },
           "admin": {
             "type": "number",
             "example": 3,
@@ -873,6 +892,7 @@
           "dob",
           "lastname",
           "firstname",
+          "customer_id",
           "admin"
         ]
       },
@@ -893,6 +913,11 @@
             "type": "boolean",
             "example": "true",
             "description": "Autorisation pour modifier les jeux"
+          },
+          "tutor_id": {
+            "type": "number",
+            "example": "1",
+            "description": "Id du tuteur"
           },
           "email": {
             "type": "string",

@@ -21,14 +21,6 @@ export class TutorsService {
   ) {}
 
   async findOneByEmail(email: string) {
-    const existingAdmin = await this.adminsRepository.findOneBy({});
-
-    if (!existingAdmin) {
-      throw new UnauthorizedException(
-        'Création impossible, aucun administrateur trouvé',
-      );
-    }
-
     const tutor = await this.tutorsRepository.findOneBy({ email });
 
     if (!tutor) {
@@ -37,13 +29,13 @@ export class TutorsService {
       );
     }
 
-    return { ...tutor, admin_id: existingAdmin.id };
+    return tutor;
   }
 
   async create(createTutorDto: CreateTutorDto) {
     const { admin_id } = createTutorDto;
-    const existingAdmin = await this.adminsRepository.findOneBy({
-      id: admin_id,
+    const existingAdmin = await this.adminsRepository.findOne({
+      where: { id: admin_id },
     });
 
     if (!existingAdmin) {
@@ -56,9 +48,17 @@ export class TutorsService {
     const hashedPassword = await bcrypt.hash(createTutorDto.password, salt);
     const tutor = this.tutorsRepository.create({
       ...createTutorDto,
+      admin: existingAdmin,
       password: hashedPassword,
     });
 
-    return this.tutorsRepository.save(tutor);
+    const savedTutor = await this.tutorsRepository.save(tutor);
+
+    const { password: tutorPassword, ...tutorWithoutPassword } = savedTutor;
+
+    const { password: adminPassword, ...adminWithoutPassword } =
+      savedTutor.admin;
+
+    return { ...tutorWithoutPassword, ...adminWithoutPassword };
   }
 }
