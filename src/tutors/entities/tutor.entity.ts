@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { Student } from 'src/students/entities/student.entity';
 import {
@@ -24,7 +25,7 @@ export class Tutor {
     example: 'email@email.fr',
     description: 'Email du tuteur',
   })
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @ApiProperty({
@@ -34,6 +35,7 @@ export class Tutor {
       'Mot de passe du tuteur (1 majuscule, 1 minuscule, 8 caractères minimum, 1 caractère spéciale) ',
   })
   @Column()
+  @Exclude()
   password: string;
 
   @ApiProperty({
@@ -61,17 +63,25 @@ export class Tutor {
   firstname: string;
 
   @ApiProperty({
+    type: String,
+    example: 'cus_N1aB2C3D4E5F6G',
+    description: 'ID du client stripe associé au tuteur',
+  })
+  @Column()
+  customer_id: string;
+
+  @ApiProperty({
     type: Number,
     example: 3,
     description: "ID de l'administrateur qui à les droits sur le tuteur",
   })
-  @ManyToOne(() => Admin, (admin) => admin.tutors, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Admin, (admin) => admin.tutors)
   @JoinColumn({ name: 'admin_id' })
   admin: Admin;
 
-  @ManyToMany(() => Subscription, (subscription) => subscription.tutors)
+  @ManyToMany(() => Subscription, (subscription) => subscription.tutors, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'tutor_subscription',
     joinColumn: { name: 'tutor_id', referencedColumnName: 'id' },
@@ -82,7 +92,7 @@ export class Tutor {
   })
   subscriptions: Subscription[];
 
-  @OneToMany(() => Student, (student) => student.id)
+  @OneToMany(() => Student, (student) => student.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'student_id' })
   students: Student[];
 }

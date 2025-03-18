@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MinLength,
+} from 'class-validator';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { Student } from 'src/students/entities/student.entity';
 import { Subscription } from 'src/subscriptions/entities/subscription.entity';
@@ -11,8 +17,8 @@ export class CreateTutorDto {
     type: String,
     required: true,
   })
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: "L'email est invalide" })
+  @IsNotEmpty({ message: "L'email est obligatoire" })
   email: string;
 
   @ApiProperty({
@@ -22,7 +28,15 @@ export class CreateTutorDto {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Le mot de passe est obligatoire.' })
+  @IsString()
+  @MinLength(8, {
+    message: 'Le mot de passe doit contenir au moins 8 caractères.',
+  })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, {
+    message:
+      'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.',
+  })
   password: string;
 
   @ApiProperty({
@@ -55,11 +69,20 @@ export class CreateTutorDto {
   @ApiProperty({
     example: '1',
     description: "Id de l'admin associé",
-    type: String,
+    type: Admin,
     required: true,
   })
   @IsNotEmpty()
-  adminId: Admin;
+  admin_id: number;
+
+  @ApiProperty({
+    type: String,
+    example: 'cus_N1aB2C3D4E5F6G',
+    description: 'ID du client stripe associé au tuteur',
+  })
+  @IsString()
+  @IsNotEmpty()
+  customer_id: string;
 
   subscriptions: Subscription[];
 

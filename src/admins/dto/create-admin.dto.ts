@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
-import { Tutor } from 'src/tutors/entities/tutor.entity';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MinLength,
+} from 'class-validator';
 
 export class CreateAdminDto {
   @ApiProperty({
@@ -33,8 +39,14 @@ export class CreateAdminDto {
   @IsNotEmpty()
   manage_games: boolean;
 
-  @IsOptional()
-  tutors?: Tutor[];
+  @ApiProperty({
+    example: '1',
+    description: 'Id du tuteur',
+    type: Number,
+    required: false,
+  })
+  @IsNotEmpty()
+  tutor_id: number;
 
   @ApiProperty({
     example: 'email@email.fr',
@@ -53,6 +65,14 @@ export class CreateAdminDto {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Le mot de passe est obligatoire.' })
+  @IsString()
+  @MinLength(8, {
+    message: 'Le mot de passe doit contenir au moins 8 caractères.',
+  })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, {
+    message:
+      'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.',
+  })
   password: string;
 }

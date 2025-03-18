@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
   Column,
@@ -12,10 +13,11 @@ export class Admin {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()

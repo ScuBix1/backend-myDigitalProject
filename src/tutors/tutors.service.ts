@@ -20,33 +20,7 @@ export class TutorsService {
     private adminsRepository: Repository<Admin>,
   ) {}
 
-  async create(createTutorDto: CreateTutorDto) {
-    const existingAdmin = await this.adminsRepository.findOneBy({});
-    if (!existingAdmin) {
-      throw new UnauthorizedException(
-        'Création impossible, aucun administrateur trouvé',
-      );
-    }
-    console.log(existingAdmin);
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(createTutorDto.password, salt);
-    const admin = this.tutorsRepository.create({
-      ...createTutorDto,
-      password: hashedPassword,
-    });
-
-    return this.tutorsRepository.save(admin);
-  }
-
   async findOneByEmail(email: string) {
-    const existingAdmin = await this.adminsRepository.findOneBy({});
-
-    if (!existingAdmin) {
-      throw new UnauthorizedException(
-        'Création impossible, aucun administrateur trouvé',
-      );
-    }
-
     const tutor = await this.tutorsRepository.findOneBy({ email });
 
     if (!tutor) {
@@ -55,6 +29,36 @@ export class TutorsService {
       );
     }
 
-    return { ...tutor, admin_id: existingAdmin.id };
+    return tutor;
+  }
+
+  async create(createTutorDto: CreateTutorDto) {
+    const { admin_id } = createTutorDto;
+    const existingAdmin = await this.adminsRepository.findOne({
+      where: { id: admin_id },
+    });
+
+    if (!existingAdmin) {
+      throw new UnauthorizedException(
+        'Création impossible, aucun administrateur trouvé',
+      );
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(createTutorDto.password, salt);
+    const tutor = this.tutorsRepository.create({
+      ...createTutorDto,
+      admin: existingAdmin,
+      password: hashedPassword,
+    });
+
+    const savedTutor = await this.tutorsRepository.save(tutor);
+
+    const { password: tutorPassword, ...tutorWithoutPassword } = savedTutor;
+
+    const { password: adminPassword, ...adminWithoutPassword } =
+      savedTutor.admin;
+
+    return { ...tutorWithoutPassword, ...adminWithoutPassword };
   }
 }

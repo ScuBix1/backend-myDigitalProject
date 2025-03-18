@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -12,6 +19,7 @@ import { Tutor } from './entities/tutor.entity';
 import { TutorsService } from './tutors.service';
 
 @Controller('tutors')
+@UseInterceptors(ClassSerializerInterceptor)
 export class TutorsController {
   constructor(private readonly tutorsService: TutorsService) {}
   @ApiOperation({ summary: "Inscription d'un tuteur" })
@@ -23,7 +31,7 @@ export class TutorsController {
     type: CreateTutorDto,
   })
   @Post('sign-up')
-  create(@Query() createTutorDto: CreateTutorDto) {
+  create(@Body() createTutorDto: CreateTutorDto) {
     return this.tutorsService.create(createTutorDto);
   }
 
