@@ -1,4 +1,5 @@
 export enum SubscriptionType {
-  INDIVIDUAL = 'individual',
-  PROFESSIONAL = 'professional',
+  TRY = 'try',
+  MONTHLY = 'monthly',
+  ANNUAL = 'annual',
 }

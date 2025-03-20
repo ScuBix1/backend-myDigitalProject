@@ -93,63 +93,13 @@ paths:
   /students/sign-up:
     post:
       operationId: StudentsController_create
-      parameters:
-        - name: lastname
-          required: true
-          in: query
-          description: Nom de l'étudiant
-          schema:
-            example: Doe
-            type: string
-        - name: firstname
-          required: true
-          in: query
-          description: Prénom de l'étudiant
-          schema:
-            example: John
-            type: string
-        - name: username
-          required: true
-          in: query
-          description: Nom d'utilisateur unique
-          schema:
-            example: johndoe123
-            type: string
-        - name: password
-          required: true
-          in: query
-          description: Mot de passe sécurisé
-          schema:
-            example: Mypassword123!
-            type: string
-        - name: start_hour
-          required: true
-          in: query
-          description: Heure de début de session (format ISO)
-          schema:
-            example: '2025-03-11T08:00:00.000Z'
-            type: string
-        - name: duration
-          required: true
-          in: query
-          description: Durée de la session en minutes
-          schema:
-            example: 60
-            type: number
-        - name: tutor_id
-          required: true
-          in: query
-          description: ID du tuteur associé à l'étudiant
-          schema:
-            example: 1
-            type: number
-        - name: grade_id
-          required: true
-          in: query
-          description: ID du niveau scolaire de l'étudiant
-          schema:
-            example: 2
-            type: number
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStudentDto'
       responses:
         '201':
           description: L'étudiant a été créé avec succès
@@ -656,10 +606,11 @@ components:
           description: Prix de l'abonnement
         type:
           type: string
-          example: INDIVIDUAL
+          example: MONTHLY
           enum:
-            - individual
-            - professional
+            - try
+            - monthly
+            - annual
           description: Type d'abonnement
         start_date:
           type: string

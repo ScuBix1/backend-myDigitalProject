@@ -1,11 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { SubscriptionType } from 'src/constants/enums/subscriptions.enum';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 
 @Injectable()
 export class SubscriptionsService {
   create(createSubscriptionDto: CreateSubscriptionDto) {
-    return 'This action adds a new subscription';
+    const { type } = createSubscriptionDto;
+
+    if (
+      type !== SubscriptionType.ANNUAL &&
+      type !== SubscriptionType.MONTHLY &&
+      type !== SubscriptionType.TRY
+    ) {
+      throw new BadRequestException("Ce type d'abonnement n'existe pas.");
+    }
+    return createSubscriptionDto;
   }
 
   findAll() {

@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -30,7 +29,7 @@ export class StudentsController {
   @ApiBadRequestResponse({
     description: 'Les informations saisies sont invalides',
   })
-  create(@Query() createStudentDto: CreateStudentDto) {
+  create(@Body() createStudentDto: CreateStudentDto) {
     return this.studentsService.create(createStudentDto);
   }
 

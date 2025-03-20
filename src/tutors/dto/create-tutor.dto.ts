@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsDate,
   IsEmail,
   IsNotEmpty,
   IsString,
@@ -46,6 +47,7 @@ export class CreateTutorDto {
     required: true,
   })
   @IsNotEmpty()
+  @IsDate({ message: 'La date de naissance est invalide' })
   dob: Date;
 
   @ApiProperty({
