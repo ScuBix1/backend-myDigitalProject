@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
+import * as path from 'path';
 import { AdminsModule } from './admins/admins.module';
 import { Admin } from './admins/entities/admin.entity';
 import { AuthModule } from './auth/auth.module';
@@ -22,6 +24,19 @@ import { TutorsModule } from './tutors/tutors.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    I18nModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        fallbackLanguage: configService.get('FALLBACK_LANG'),
+        loaderOptions: {
+          path: path.join(__dirname, '/i18n/'),
+          watch: true,
+        },
+      }),
+      resolvers: [
+        { use: AcceptLanguageResolver, options: ['lang', 'l', 'locale'] },
+      ],
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({

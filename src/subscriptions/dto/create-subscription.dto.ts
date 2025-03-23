@@ -11,17 +11,17 @@ import { SubscriptionType } from 'src/constants/enums/subscriptions.enum';
 
 export class CreateSubscriptionDto {
   @ApiProperty({ example: 19.99, description: "Prix de l'abonnement" })
-  @IsNotEmpty()
-  @IsNumber()
+  @IsNotEmpty({ message: "Le prix de l'abonnement est obligatoire" })
+  @IsNumber({}, { message: "Le prix de l'abonnement doit être un nombre" })
   price: number;
 
   @ApiProperty({
-    example: 'INDIVIDUAL',
+    example: 'MONTHLY',
     enum: SubscriptionType,
     description: "Type d'abonnement",
   })
   @IsEnum(SubscriptionType)
-  @IsNotEmpty()
+  @IsNotEmpty({ message: "Le type d'abonnement est obligatoire" })
   type: SubscriptionType;
 
   @ApiProperty({

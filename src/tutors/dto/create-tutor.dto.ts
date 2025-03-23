@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsDate,
   IsEmail,
   IsNotEmpty,
   IsString,
   Matches,
   MinLength,
 } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { Student } from 'src/students/entities/student.entity';
 import { Subscription } from 'src/subscriptions/entities/subscription.entity';
@@ -17,8 +19,8 @@ export class CreateTutorDto {
     type: String,
     required: true,
   })
-  @IsEmail({}, { message: "L'email est invalide" })
-  @IsNotEmpty({ message: "L'email est obligatoire" })
+  @IsEmail({}, { message: i18nValidationMessage('validation.isEmail') })
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   email: string;
 
   @ApiProperty({
@@ -28,14 +30,15 @@ export class CreateTutorDto {
     type: String,
     required: true,
   })
-  @IsNotEmpty({ message: 'Le mot de passe est obligatoire.' })
-  @IsString()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
+  @IsString({ message: i18nValidationMessage('validation.isString') })
   @MinLength(8, {
-    message: 'Le mot de passe doit contenir au moins 8 caractères.',
+    message: i18nValidationMessage('validation.minLength', {
+      messageArgs: { minLength: 8 },
+    }),
   })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, {
-    message:
-      'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.',
+    message: i18nValidationMessage('validation.matches'),
   })
   password: string;
 
@@ -45,7 +48,8 @@ export class CreateTutorDto {
     type: Date,
     required: true,
   })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
+  @IsDate({ message: i18nValidationMessage('validation.isDate') })
   dob: Date;
 
   @ApiProperty({
@@ -54,7 +58,7 @@ export class CreateTutorDto {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   lastname: string;
 
   @ApiProperty({
@@ -63,7 +67,7 @@ export class CreateTutorDto {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   firstname: string;
 
   @ApiProperty({
@@ -72,7 +76,7 @@ export class CreateTutorDto {
     type: Admin,
     required: true,
   })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   admin_id: number;
 
   @ApiProperty({
@@ -80,8 +84,8 @@ export class CreateTutorDto {
     example: 'cus_N1aB2C3D4E5F6G',
     description: 'ID du client stripe associé au tuteur',
   })
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: i18nValidationMessage('validation.isString') })
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   customer_id: string;
 
   subscriptions: Subscription[];

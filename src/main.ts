@@ -3,6 +3,10 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
 import * as yaml from 'js-yaml';
+import {
+  I18nValidationExceptionFilter,
+  i18nValidationErrorFactory,
+} from 'nestjs-i18n';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -13,8 +17,11 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      exceptionFactory: i18nValidationErrorFactory,
     }),
   );
+
+  app.useGlobalFilters(new I18nValidationExceptionFilter());
 
   const config = new DocumentBuilder()
     .setTitle('Math&Magique')

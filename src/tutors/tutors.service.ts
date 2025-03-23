@@ -33,32 +33,38 @@ export class TutorsService {
   }
 
   async create(createTutorDto: CreateTutorDto) {
-    const { admin_id } = createTutorDto;
-    const existingAdmin = await this.adminsRepository.findOne({
-      where: { id: admin_id },
-    });
+    try {
+      const { admin_id } = createTutorDto;
+      const existingAdmin = await this.adminsRepository.findOne({
+        where: { id: admin_id },
+      });
 
-    if (!existingAdmin) {
-      throw new UnauthorizedException(
-        'Création impossible, aucun administrateur trouvé',
-      );
+      if (!existingAdmin) {
+        throw new UnauthorizedException(
+          'Création impossible, aucun administrateur trouvé',
+        );
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(createTutorDto.password, salt);
+      const tutor = this.tutorsRepository.create({
+        ...createTutorDto,
+        admin: existingAdmin,
+        password: hashedPassword,
+      });
+
+      const savedTutor = await this.tutorsRepository.save(tutor);
+
+      const { password: tutorPassword, ...tutorWithoutPassword } = savedTutor;
+
+      const { password: adminPassword, ...adminWithoutPassword } =
+        savedTutor.admin;
+
+      return { ...tutorWithoutPassword, ...adminWithoutPassword };
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new UnauthorizedException('Un tuteur avec cet email existe déjà');
+      }
     }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(createTutorDto.password, salt);
-    const tutor = this.tutorsRepository.create({
-      ...createTutorDto,
-      admin: existingAdmin,
-      password: hashedPassword,
-    });
-
-    const savedTutor = await this.tutorsRepository.save(tutor);
-
-    const { password: tutorPassword, ...tutorWithoutPassword } = savedTutor;
-
-    const { password: adminPassword, ...adminWithoutPassword } =
-      savedTutor.admin;
-
-    return { ...tutorWithoutPassword, ...adminWithoutPassword };
   }
 }

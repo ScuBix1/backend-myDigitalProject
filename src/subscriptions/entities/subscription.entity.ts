@@ -19,7 +19,7 @@ export class Subscription {
   @Column({
     type: 'enum',
     enum: SubscriptionType,
-    default: SubscriptionType.INDIVIDUAL,
+    default: SubscriptionType.TRY,
   })
   type: SubscriptionType;
 
