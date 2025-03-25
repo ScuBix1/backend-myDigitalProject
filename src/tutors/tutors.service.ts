@@ -2,10 +2,13 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Admin } from 'src/admins/entities/admin.entity';
+import { EmailService } from 'src/message/email.service';
+import { VerificationService } from 'src/verification/verification.service';
 import { Repository } from 'typeorm';
 import { CreateTutorDto } from './dto/create-tutor.dto';
 import { Tutor } from './entities/tutor.entity';
@@ -18,6 +21,9 @@ export class TutorsService {
 
     @InjectRepository(Admin)
     private adminsRepository: Repository<Admin>,
+
+    private verificationTokenService: VerificationService,
+    private emailService: EmailService,
   ) {}
 
   async findOneByEmail(email: string) {
@@ -66,5 +72,60 @@ export class TutorsService {
         throw new UnauthorizedException('Un tuteur avec cet email existe déjà');
       }
     }
+  }
+
+  async generateEmailVerification(email: string) {
+    const tutor = await this.tutorsRepository.findOne({
+      where: { email: email },
+    });
+
+    if (!tutor) {
+      throw new NotFoundException('Tuteur non trouvé');
+    }
+
+    if (tutor.emailVerifiedAt) {
+      throw new UnprocessableEntityException('Compte déjà vérifié');
+    }
+
+    const otp = await this.verificationTokenService.generateOtp(tutor.id);
+
+    await this.emailService.sendEmail({
+      subject: 'Math&Magique - Vérification du compte',
+      recipients: [
+        { name: tutor.firstname + ' ' + tutor.lastname, address: tutor.email },
+      ],
+      html: `<p>Salut ${tutor.firstname ? tutor.firstname : ' '},</p><p>Voici votre code de vérification: <br /><span style="font-size:24px; font-weight: 700;">${otp}</span></p><p>Cordialement,<br />Math&Magique</p>`,
+      text: `Hi${tutor.firstname ? ' ' + tutor.lastname : ''}, Voici votre code de vérification: ${otp}`,
+    });
+  }
+
+  async verifyEmail(email: string, token: string) {
+    const invalidMessage = 'OTP invalide ou expiré';
+
+    const tutor = await this.tutorsRepository.findOneBy({ email });
+
+    if (!tutor) {
+      throw new UnprocessableEntityException("Le tuteur n'existe pas !");
+    }
+
+    if (tutor.emailVerifiedAt) {
+      throw new UnprocessableEntityException('Compte déjà verifié');
+    }
+
+    const isValid = await this.verificationTokenService.validateOtp(
+      tutor.id,
+      token,
+    );
+
+    if (!isValid) {
+      throw new UnprocessableEntityException(invalidMessage);
+    }
+
+    tutor.emailVerifiedAt = new Date();
+    tutor.accountStatus = 'actif';
+
+    await this.tutorsRepository.save(tutor);
+
+    return true;
   }
 }

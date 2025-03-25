@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDate,
+  IsDateString,
   IsEmail,
   IsNotEmpty,
   IsString,
@@ -49,7 +49,7 @@ export class CreateTutorDto {
     required: true,
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-  @IsDate({ message: i18nValidationMessage('validation.isDate') })
+  @IsDateString({}, { message: i18nValidationMessage('validation.isDate') })
   dob: Date;
 
   @ApiProperty({

@@ -1,0 +1,44 @@
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Tutor } from 'src/tutors/entities/tutor.entity';
+import { NO_ACCOUNT_GUARD_KEY } from '../decorators/no-account-guard.decorator';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+
+@Injectable()
+export class AccountGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
+
+  canActivate(context: ExecutionContext): boolean {
+    const noAccountGuard = this.reflector.getAllAndOverride<boolean>(
+      NO_ACCOUNT_GUARD_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic || noAccountGuard) {
+      return true;
+    }
+
+    const request = context.switchToHttp().getRequest();
+    const tutor: Tutor = request.tutor;
+
+    if (!tutor.emailVerifiedAt) {
+      throw new UnauthorizedException(`Ce compte n'est pas vérifié`);
+    }
+
+    if (tutor.accountStatus !== 'actif') {
+      throw new UnauthorizedException(`Compte ${tutor.accountStatus}`);
+    }
+
+    return tutor.accountStatus === 'actif' && !!tutor.emailVerifiedAt;
+  }
+}

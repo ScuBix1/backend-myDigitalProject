@@ -116,6 +116,53 @@
         ]
       }
     },
+    "/tutors/verification-otp": {
+      "post": {
+        "operationId": "TutorsController_generateEmailVerification",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tutors"
+        ]
+      }
+    },
+    "/tutors/verify/{otp}": {
+      "post": {
+        "operationId": "TutorsController_verifyEmail",
+        "parameters": [
+          {
+            "name": "otp",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tutors"
+        ]
+      }
+    },
     "/admins/sign-up": {
       "post": {
         "operationId": "AdminsController_create",
@@ -825,6 +872,10 @@
           "admin"
         ]
       },
+      "VerifyEmailDto": {
+        "type": "object",
+        "properties": {}
+      },
       "CreateAdminDto": {
         "type": "object",
         "properties": {
@@ -936,12 +987,7 @@
           },
           "type": {
             "type": "string",
-            "example": "MONTHLY",
-            "enum": [
-              "try",
-              "monthly",
-              "annual"
-            ],
+            "example": "monthly",
             "description": "Type d'abonnement"
           },
           "start_date": {
