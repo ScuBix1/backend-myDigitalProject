@@ -1,6 +1,11 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { MoreThan, Repository } from 'typeorm';
 import { Verification } from './entities/verification.entity';
 import { generateOtp } from './utils/otp.util';
@@ -14,14 +19,25 @@ export class VerificationService {
   constructor(
     @InjectRepository(Verification)
     private tokenRepository: Repository<Verification>,
+
+    @InjectRepository(Tutor)
+    private tutorsRepository: Repository<Tutor>,
   ) {}
 
   async generateOtp(userId: number, size = 6): Promise<string> {
     const now = new Date();
 
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!tutor) {
+      throw new NotFoundException("Le tuteur n'existe pas");
+    }
+
     const recentToken = await this.tokenRepository.findOne({
       where: {
-        userId,
+        tutor,
         createdAt: MoreThan(
           new Date(now.getTime() - this.minRequestIntervalMinutes * 60 * 1000),
         ),
@@ -36,14 +52,14 @@ export class VerificationService {
     const hashedToken = await bcrypt.hash(otp, this.saltRounds);
 
     const tokenEntity = this.tokenRepository.create({
-      userId,
+      tutor,
       token: hashedToken,
       expiresAt: new Date(
         now.getTime() + this.tokenExpirationMinutes * 60 * 1000,
       ),
     });
 
-    await this.tokenRepository.delete({ userId });
+    await this.tokenRepository.delete({ tutor });
 
     await this.tokenRepository.save(tokenEntity);
 
@@ -51,8 +67,16 @@ export class VerificationService {
   }
 
   async validateOtp(userId: number, token: string): Promise<boolean> {
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!tutor) {
+      throw new NotFoundException("Le tuteur n'existe pas");
+    }
+
     const validToken = await this.tokenRepository.findOne({
-      where: { userId, expiresAt: MoreThan(new Date()) },
+      where: { tutor, expiresAt: MoreThan(new Date()) },
     });
 
     if (validToken && (await bcrypt.compare(token, validToken.token))) {

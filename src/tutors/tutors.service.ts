@@ -75,9 +75,7 @@ export class TutorsService {
   }
 
   async generateEmailVerification(email: string) {
-    const tutor = await this.tutorsRepository.findOne({
-      where: { email: email },
-    });
+    const tutor = await this.tutorsRepository.findOneBy({ email });
 
     if (!tutor) {
       throw new NotFoundException('Tuteur non trouvé');

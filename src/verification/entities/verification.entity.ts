@@ -13,9 +13,6 @@ export class Verification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  userId: number;
-
   @ManyToOne(() => Tutor, (tutor) => tutor.id)
   @JoinColumn({ name: 'tutor_id' })
   tutor: Tutor;
