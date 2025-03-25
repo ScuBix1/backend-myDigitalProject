@@ -19,6 +19,8 @@ import { Subscription } from './subscriptions/entities/subscription.entity';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { Tutor } from './tutors/entities/tutor.entity';
 import { TutorsModule } from './tutors/tutors.module';
+import { Verification } from './verification/entities/verification.entity';
+import { VerificationModule } from './verification/verification.module';
 
 @Module({
   imports: [
@@ -46,7 +48,16 @@ import { TutorsModule } from './tutors/tutors.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [Admin, Tutor, Student, Game, Session, Grade, Subscription],
+        entities: [
+          Admin,
+          Tutor,
+          Student,
+          Game,
+          Session,
+          Grade,
+          Subscription,
+          Verification,
+        ],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -59,6 +70,7 @@ import { TutorsModule } from './tutors/tutors.module';
     SessionsModule,
     GamesModule,
     GradesModule,
+    VerificationModule,
   ],
   providers: [StudentsService],
 })

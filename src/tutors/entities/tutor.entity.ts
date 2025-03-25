@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { Student } from 'src/students/entities/student.entity';
+import { Verification } from 'src/verification/entities/verification.entity';
 import {
   Column,
   Entity,
@@ -70,6 +71,12 @@ export class Tutor {
   @Column()
   customer_id: string;
 
+  @Column({ default: 'inactif' })
+  accountStatus: 'actif' | 'inactif';
+
+  @Column({ nullable: true })
+  emailVerifiedAt: Date;
+
   @ApiProperty({
     type: Number,
     example: 3,
@@ -95,4 +102,10 @@ export class Tutor {
   @OneToMany(() => Student, (student) => student.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'student_id' })
   students: Student[];
+
+  @OneToMany(() => Verification, (verification) => verification.id, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'verification_id' })
+  verifications: Verification[];
 }

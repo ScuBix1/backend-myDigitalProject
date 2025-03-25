@@ -1,9 +1,13 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { TutorsService } from 'src/tutors/tutors.service';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private tutorsService: TutorsService,
+  ) {}
 
   @Post('admin-login')
   async adminLogin(@Body() body) {

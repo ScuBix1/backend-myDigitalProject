@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Param,
   Post,
   UseInterceptors,
 } from '@nestjs/common';
@@ -14,7 +15,10 @@ import {
   ApiOperation,
   ApiQuery,
 } from '@nestjs/swagger';
+import { CurrentTutor } from 'src/auth/decorators/current-tutor.decorator';
+import { NoAccountGuard } from 'src/auth/decorators/no-account-guard.decorator';
 import { CreateTutorDto } from './dto/create-tutor.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Tutor } from './entities/tutor.entity';
 import { TutorsService } from './tutors.service';
 
@@ -50,5 +54,19 @@ export class TutorsController {
   @ApiBadRequestResponse({ description: "L'email du tuteur est invalide" })
   findOne(@Body('email') email: string) {
     return this.tutorsService.findOneByEmail(email);
+  }
+
+  @NoAccountGuard()
+  @Post('verification-otp')
+  async generateEmailVerification(@CurrentTutor() tutor: Tutor) {
+    await this.tutorsService.generateEmailVerification(tutor.email);
+    return { status: 'succès', message: "Le mail est en cours d'envoie" };
+  }
+
+  @Post('verify/:otp')
+  async verifyEmail(@Param('otp') otp: string, @Body() data: VerifyEmailDto) {
+    const result = await this.tutorsService.verifyEmail(data.email, otp);
+
+    return { status: result ? 'succès' : 'échec', message: null };
   }
 }

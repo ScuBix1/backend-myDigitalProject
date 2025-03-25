@@ -1,13 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AdminsService } from 'src/admins/admins.service';
 import { TutorsService } from 'src/tutors/tutors.service';
 import { StudentsService } from '../students/students.service';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,13 +15,32 @@ export class AuthService {
     private studentsService: StudentsService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(loginDto: LoginDto) {
+    const { email, password } = loginDto;
     const tutor = await this.tutorsService.findOneByEmail(email);
-    if (tutor && (await bcrypt.compare(pass, tutor.password))) {
-      const { password, ...result } = tutor;
-      return result;
+    if (!tutor) {
+      return null;
     }
-    throw new UnauthorizedException('Utilisateur non autorisé');
+
+    try {
+      const isMatch = await bcrypt.compare(password, tutor.password);
+      if (!isMatch) {
+        return null;
+      }
+    } catch (error) {
+      return null;
+    }
+
+    delete tutor.password;
+
+    return tutor;
+  }
+
+  async login(user: any) {
+    const payload = { email: user.email, sub: user.id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   async adminLogin(email: string, password: string) {

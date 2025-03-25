@@ -2,11 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsDateString,
-  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
 } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 import { SubscriptionType } from 'src/constants/enums/subscriptions.enum';
 
 export class CreateSubscriptionDto {
@@ -16,12 +16,10 @@ export class CreateSubscriptionDto {
   price: number;
 
   @ApiProperty({
-    example: 'MONTHLY',
-    enum: SubscriptionType,
+    example: 'monthly',
     description: "Type d'abonnement",
   })
-  @IsEnum(SubscriptionType)
-  @IsNotEmpty({ message: "Le type d'abonnement est obligatoire" })
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   type: SubscriptionType;
 
   @ApiProperty({

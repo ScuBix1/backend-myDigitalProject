@@ -70,6 +70,33 @@ paths:
           description: Le tuteur avec l'email demandé n'est pas trouvé
       summary: Récupère un tuteur en fonction de son email
       tags: *ref_1
+  /tutors/verification-otp:
+    post:
+      operationId: TutorsController_generateEmailVerification
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_1
+  /tutors/verify/{otp}:
+    post:
+      operationId: TutorsController_verifyEmail
+      parameters:
+        - name: otp
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_1
   /admins/sign-up:
     post:
       operationId: AdminsController_create
@@ -515,6 +542,9 @@ components:
         - firstname
         - customer_id
         - admin
+    VerifyEmailDto:
+      type: object
+      properties: {}
     CreateAdminDto:
       type: object
       properties:
@@ -606,11 +636,7 @@ components:
           description: Prix de l'abonnement
         type:
           type: string
-          example: MONTHLY
-          enum:
-            - try
-            - monthly
-            - annual
+          example: monthly
           description: Type d'abonnement
         start_date:
           type: string
