@@ -1,9 +1,19 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { AdminsService } from 'src/admins/admins.service';
+import { EmailService } from 'src/message/email.service';
+import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { TutorsService } from 'src/tutors/tutors.service';
+import { Repository } from 'typeorm';
 import { StudentsService } from '../students/students.service';
+import { VerificationService } from '../verification/verification.service';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
@@ -13,6 +23,11 @@ export class AuthService {
     private jwtService: JwtService,
     private adminsService: AdminsService,
     private studentsService: StudentsService,
+    private verificationService: VerificationService,
+    private emailService: EmailService,
+    private configService: ConfigService,
+    @InjectRepository(Tutor)
+    private tutorsRepository: Repository<Tutor>,
   ) {}
 
   async validateUser(loginDto: LoginDto) {
@@ -98,5 +113,36 @@ export class AuthService {
     }
 
     throw new BadRequestException("L'email ou le mot de passe est incorrect");
+  }
+
+  async sendForgotPasswordEmail(email: string) {
+    const tutor = await this.tutorsRepository.findOne({ where: { email } });
+    if (!tutor) throw new NotFoundException('Aucun utilisateur trouvé');
+
+    const reset = await this.verificationService.generateResetToken(email);
+
+    const resetLink = `${this.configService.get('URL')}/${reset}`;
+
+    await this.emailService.sendEmail({
+      subject: 'Réinitialisation du mot de passe',
+      recipients: [{ address: email, name: tutor.firstname }],
+      html: `<p>Voici votre lien : <a href="${resetLink}">${resetLink}</a></p>`,
+      text: 'text',
+    });
+
+    return { message: 'Email de réinitialisation envoyé.' };
+  }
+
+  async resetPassword(token: string, email: string, newPassword: string) {
+    const tutor = await this.verificationService.verifyResetToken(token, email);
+    if (!tutor) throw new NotFoundException('Utilisateur non trouvé');
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    tutor.password = hashedPassword;
+    await this.tutorsRepository.save(tutor);
+
+    await this.verificationService.deleteResetToken(token);
+
+    return { message: 'Mot de passe réinitialisé avec succès' };
   }
 }
