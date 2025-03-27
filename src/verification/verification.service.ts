@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { MoreThan, Repository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 import { Verification } from './entities/verification.entity';
 import { generateOtp } from './utils/otp.util';
 
@@ -85,6 +86,43 @@ export class VerificationService {
     } else {
       return false;
     }
+  }
+
+  async generateResetToken(email: string): Promise<string> {
+    const tutor = await this.tutorsRepository.findOneBy({ email });
+    if (!tutor) throw new Error('Tuteur introuvable');
+
+    const token = uuidv4();
+    const expiresAt = new Date(
+      Date.now() + 1000 * 60 * this.tokenExpirationMinutes,
+    );
+
+    await this.tokenRepository.insert({
+      tutor,
+      token: token,
+      expiresAt,
+    });
+
+    return token;
+  }
+
+  async verifyResetToken(token: string, email: string): Promise<Tutor> {
+    const tutor = await this.tutorsRepository.findOneBy({ email });
+    if (!tutor) throw new Error('Tuteur introuvable');
+
+    const record = await this.tokenRepository.findOne({
+      where: { tutor: { id: tutor.id }, token: token },
+    });
+
+    if (!record || new Date(record.expiresAt) < new Date()) {
+      throw new Error('Token invalide ou expiré');
+    }
+
+    return tutor;
+  }
+
+  async deleteResetToken(token: string) {
+    await this.tokenRepository.delete({ token });
   }
 
   async cleanUpExpiredTokens() {}

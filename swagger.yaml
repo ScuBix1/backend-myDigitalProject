@@ -25,6 +25,27 @@ paths:
         '201':
           description: ''
       tags: *ref_0
+  /auth/forgot-password:
+    post:
+      operationId: AuthController_forgotPassword
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_0
+  /auth/reset-password/{token}:
+    post:
+      operationId: AuthController_resetPassword
+      parameters:
+        - name: token
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+      tags: *ref_0
   /tutors/sign-up:
     post:
       operationId: TutorsController_create
