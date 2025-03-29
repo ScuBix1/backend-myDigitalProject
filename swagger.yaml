@@ -29,6 +29,12 @@ paths:
     post:
       operationId: AuthController_forgotPassword
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordDto'
       responses:
         '201':
           description: ''
@@ -42,6 +48,12 @@ paths:
           in: path
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordDto'
       responses:
         '201':
           description: ''
@@ -470,6 +482,12 @@ tags:
 servers: []
 components:
   schemas:
+    ForgotPasswordDto:
+      type: object
+      properties: {}
+    ResetPasswordDto:
+      type: object
+      properties: {}
     Admin:
       type: object
       properties: {}

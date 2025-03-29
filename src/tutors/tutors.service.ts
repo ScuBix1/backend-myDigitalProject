@@ -81,7 +81,7 @@ export class TutorsService {
       throw new NotFoundException('Tuteur non trouvé');
     }
 
-    if (tutor.emailVerifiedAt) {
+    if (tutor.email_verified_at) {
       throw new UnprocessableEntityException('Compte déjà vérifié');
     }
 
@@ -106,7 +106,7 @@ export class TutorsService {
       throw new UnprocessableEntityException("Le tuteur n'existe pas !");
     }
 
-    if (tutor.emailVerifiedAt) {
+    if (tutor.email_verified_at) {
       throw new UnprocessableEntityException('Compte déjà verifié');
     }
 
@@ -119,8 +119,8 @@ export class TutorsService {
       throw new UnprocessableEntityException(invalidMessage);
     }
 
-    tutor.emailVerifiedAt = new Date();
-    tutor.accountStatus = 'actif';
+    tutor.email_verified_at = new Date();
+    tutor.account_status = 'actif';
 
     await this.tutorsRepository.save(tutor);
 

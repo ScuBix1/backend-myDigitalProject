@@ -72,10 +72,10 @@ export class Tutor {
   customer_id: string;
 
   @Column({ default: 'inactif' })
-  accountStatus: 'actif' | 'inactif';
+  account_status: 'actif' | 'inactif';
 
   @Column({ nullable: true })
-  emailVerifiedAt: Date;
+  email_verified_at: Date;
 
   @ApiProperty({
     type: Number,
