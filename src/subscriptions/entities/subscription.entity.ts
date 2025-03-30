@@ -1,12 +1,6 @@
 import { SubscriptionType } from 'src/constants/enums/subscriptions.enum';
-import { Tutor } from 'src/tutors/entities/tutor.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { TutorSubscription } from './tutorSubscription.entity';
 
 @Entity()
 export class Subscription {
@@ -16,6 +10,9 @@ export class Subscription {
   @Column()
   price: number;
 
+  @Column()
+  stripe_price_id: string;
+
   @Column({
     type: 'enum',
     enum: SubscriptionType,
@@ -23,17 +20,6 @@ export class Subscription {
   })
   type: SubscriptionType;
 
-  @Column()
-  start_date: Date;
-
-  @Column()
-  end_date: Date;
-
-  @ManyToMany(() => Tutor, (tutor) => tutor.subscriptions)
-  @JoinTable({
-    name: 'tutor_subscription',
-    joinColumn: { name: 'subscription_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'tutor_id', referencedColumnName: 'id' },
-  })
-  tutors: Tutor[];
+  @OneToMany(() => TutorSubscription, (ts) => ts.subscription)
+  tutorSubscriptions: TutorSubscription[];
 }

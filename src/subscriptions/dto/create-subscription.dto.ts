@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsDateString,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 import { SubscriptionType } from 'src/constants/enums/subscriptions.enum';
 
@@ -15,35 +9,14 @@ export class CreateSubscriptionDto {
   @IsNumber({}, { message: "Le prix de l'abonnement doit être un nombre" })
   price: number;
 
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
+  @IsString({ message: i18nValidationMessage('validation.isString') })
+  stripe_price_id: string;
+
   @ApiProperty({
     example: 'monthly',
     description: "Type d'abonnement",
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   type: SubscriptionType;
-
-  @ApiProperty({
-    example: '2025-03-11T00:00:00.000Z',
-    description: 'Date de début (format ISO)',
-  })
-  @IsNotEmpty()
-  @IsDateString()
-  start_date: string;
-
-  @ApiProperty({
-    example: '2026-03-11T00:00:00.000Z',
-    description: 'Date de fin (format ISO)',
-  })
-  @IsNotEmpty()
-  @IsDateString()
-  end_date: string;
-
-  @ApiProperty({
-    example: [1, 2],
-    description: 'Liste des IDs des tuteurs associés',
-  })
-  @IsArray()
-  @IsInt({ each: true })
-  @IsNotEmpty()
-  tutors_id: number[];
 }

@@ -79,13 +79,6 @@ export class CreateTutorDto {
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   admin_id: number;
 
-  @ApiProperty({
-    type: String,
-    example: 'cus_N1aB2C3D4E5F6G',
-    description: 'ID du client stripe associé au tuteur',
-  })
-  @IsString({ message: i18nValidationMessage('validation.isString') })
-  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   customer_id: string;
 
   subscriptions: Subscription[];

@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { AdminsService } from 'src/admins/admins.service';
-import { EmailService } from 'src/message/email.service';
+import { MessageService } from 'src/message/message.service';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { TutorsService } from 'src/tutors/tutors.service';
 import { Repository } from 'typeorm';
@@ -24,7 +24,7 @@ export class AuthService {
     private adminsService: AdminsService,
     private studentsService: StudentsService,
     private verificationService: VerificationService,
-    private emailService: EmailService,
+    private MessageService: MessageService,
     private configService: ConfigService,
     @InjectRepository(Tutor)
     private tutorsRepository: Repository<Tutor>,
@@ -123,7 +123,7 @@ export class AuthService {
 
     const resetLink = `${this.configService.get('URL')}/${reset}`;
 
-    await this.emailService.sendEmail({
+    await this.MessageService.sendEmail({
       subject: 'Réinitialisation du mot de passe',
       recipients: [{ address: email, name: tutor.firstname }],
       html: `<p>Voici votre lien : <a href="${resetLink}">${resetLink}</a></p>`,

@@ -3,6 +3,7 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
@@ -125,6 +126,7 @@ export class VerificationService {
     await this.tokenRepository.delete({ token });
   }
 
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async cleanUpExpiredTokens() {
     await this.tokenRepository.delete({
       expires_at: LessThan(new Date()),

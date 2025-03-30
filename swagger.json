@@ -864,11 +864,6 @@
                 "$ref": "#/components/schemas/Admin"
               }
             ]
-          },
-          "customer_id": {
-            "type": "string",
-            "example": "cus_N1aB2C3D4E5F6G",
-            "description": "ID du client stripe associé au tuteur"
           }
         },
         "required": [
@@ -877,8 +872,7 @@
           "dob",
           "lastname",
           "firstname",
-          "admin_id",
-          "customer_id"
+          "admin_id"
         ]
       },
       "Tutor": {
@@ -1054,35 +1048,11 @@
             "type": "string",
             "example": "monthly",
             "description": "Type d'abonnement"
-          },
-          "start_date": {
-            "type": "string",
-            "example": "2025-03-11T00:00:00.000Z",
-            "description": "Date de début (format ISO)"
-          },
-          "end_date": {
-            "type": "string",
-            "example": "2026-03-11T00:00:00.000Z",
-            "description": "Date de fin (format ISO)"
-          },
-          "tutors_id": {
-            "example": [
-              1,
-              2
-            ],
-            "description": "Liste des IDs des tuteurs associés",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
           }
         },
         "required": [
           "price",
-          "type",
-          "start_date",
-          "end_date",
-          "tutors_id"
+          "type"
         ]
       },
       "UpdateSubscriptionDto": {

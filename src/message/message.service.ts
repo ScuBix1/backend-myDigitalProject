@@ -4,7 +4,7 @@ import { SendMailOptions, Transporter, createTransport } from 'nodemailer';
 import { SendEmailDto } from './dto/send-email.dto';
 
 @Injectable()
-export class EmailService {
+export class MessageService {
   private mailTransport: Transporter;
 
   constructor(private configService: ConfigService) {
