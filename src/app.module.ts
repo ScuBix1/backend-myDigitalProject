@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
@@ -12,10 +13,12 @@ import { Grade } from './grades/entities/grade.entity';
 import { GradesModule } from './grades/grades.module';
 import { Session } from './sessions/entities/session.entity';
 import { SessionsModule } from './sessions/sessions.module';
+import { StripeModule } from './stripe/stripe.module';
 import { Student } from './students/entities/student.entity';
 import { StudentsModule } from './students/students.module';
 import { StudentsService } from './students/students.service';
 import { Subscription } from './subscriptions/entities/subscription.entity';
+import { TutorSubscription } from './subscriptions/entities/tutorSubscription.entity';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { Tutor } from './tutors/entities/tutor.entity';
 import { TutorsModule } from './tutors/tutors.module';
@@ -27,6 +30,7 @@ import { VerificationModule } from './verification/verification.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         fallbackLanguage: configService.get('FALLBACK_LANG'),
@@ -57,6 +61,7 @@ import { VerificationModule } from './verification/verification.module';
           Grade,
           Subscription,
           Verification,
+          TutorSubscription,
         ],
         synchronize: true,
       }),
@@ -71,6 +76,7 @@ import { VerificationModule } from './verification/verification.module';
     GamesModule,
     GradesModule,
     VerificationModule,
+    StripeModule,
   ],
   providers: [StudentsService],
 })

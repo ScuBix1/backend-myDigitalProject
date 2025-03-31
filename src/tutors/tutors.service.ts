@@ -7,9 +7,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Admin } from 'src/admins/entities/admin.entity';
-import { EmailService } from 'src/message/email.service';
+import { MessageService } from 'src/message/message.service';
 import { VerificationService } from 'src/verification/verification.service';
 import { Repository } from 'typeorm';
+import { StripeService } from '../stripe/stripe.service';
 import { CreateTutorDto } from './dto/create-tutor.dto';
 import { Tutor } from './entities/tutor.entity';
 
@@ -23,7 +24,8 @@ export class TutorsService {
     private adminsRepository: Repository<Admin>,
 
     private verificationTokenService: VerificationService,
-    private emailService: EmailService,
+    private MessageService: MessageService,
+    private stripeService: StripeService,
   ) {}
 
   async findOneByEmail(email: string) {
@@ -59,9 +61,17 @@ export class TutorsService {
         password: hashedPassword,
       });
 
+      const customerId = await this.stripeService.createCustomer(tutor);
+
+      tutor.customer_id = customerId;
+
       const savedTutor = await this.tutorsRepository.save(tutor);
 
-      const { password: tutorPassword, ...tutorWithoutPassword } = savedTutor;
+      const {
+        password: tutorPassword,
+        customer_id,
+        ...tutorWithoutPassword
+      } = savedTutor;
 
       const { password: adminPassword, ...adminWithoutPassword } =
         savedTutor.admin;
@@ -81,13 +91,13 @@ export class TutorsService {
       throw new NotFoundException('Tuteur non trouvé');
     }
 
-    if (tutor.emailVerifiedAt) {
+    if (tutor.email_verified_at) {
       throw new UnprocessableEntityException('Compte déjà vérifié');
     }
 
     const otp = await this.verificationTokenService.generateOtp(tutor.id);
 
-    await this.emailService.sendEmail({
+    await this.MessageService.sendEmail({
       subject: 'Math&Magique - Vérification du compte',
       recipients: [
         { name: tutor.firstname + ' ' + tutor.lastname, address: tutor.email },
@@ -106,7 +116,7 @@ export class TutorsService {
       throw new UnprocessableEntityException("Le tuteur n'existe pas !");
     }
 
-    if (tutor.emailVerifiedAt) {
+    if (tutor.email_verified_at) {
       throw new UnprocessableEntityException('Compte déjà verifié');
     }
 
@@ -119,8 +129,8 @@ export class TutorsService {
       throw new UnprocessableEntityException(invalidMessage);
     }
 
-    tutor.emailVerifiedAt = new Date();
-    tutor.accountStatus = 'actif';
+    tutor.email_verified_at = new Date();
+    tutor.account_status = 'actif';
 
     await this.tutorsRepository.save(tutor);
 

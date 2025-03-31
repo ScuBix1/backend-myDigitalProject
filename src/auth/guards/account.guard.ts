@@ -31,14 +31,14 @@ export class AccountGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const tutor: Tutor = request.tutor;
 
-    if (!tutor.emailVerifiedAt) {
+    if (!tutor.email_verified_at) {
       throw new UnauthorizedException(`Ce compte n'est pas vérifié`);
     }
 
-    if (tutor.accountStatus !== 'actif') {
-      throw new UnauthorizedException(`Compte ${tutor.accountStatus}`);
+    if (tutor.account_status !== 'actif') {
+      throw new UnauthorizedException(`Compte ${tutor.account_status}`);
     }
 
-    return tutor.accountStatus === 'actif' && !!tutor.emailVerifiedAt;
+    return tutor.account_status === 'actif' && !!tutor.email_verified_at;
   }
 }

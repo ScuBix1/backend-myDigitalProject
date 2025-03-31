@@ -3,10 +3,11 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
-import { MoreThan, Repository } from 'typeorm';
+import { LessThan, MoreThan, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Verification } from './entities/verification.entity';
 import { generateOtp } from './utils/otp.util';
@@ -39,7 +40,7 @@ export class VerificationService {
     const recentToken = await this.tokenRepository.findOne({
       where: {
         tutor,
-        createdAt: MoreThan(
+        expires_at: MoreThan(
           new Date(now.getTime() - this.minRequestIntervalMinutes * 60 * 1000),
         ),
       },
@@ -55,7 +56,7 @@ export class VerificationService {
     const tokenEntity = this.tokenRepository.create({
       tutor,
       token: hashedToken,
-      expiresAt: new Date(
+      expires_at: new Date(
         now.getTime() + this.tokenExpirationMinutes * 60 * 1000,
       ),
     });
@@ -77,7 +78,7 @@ export class VerificationService {
     }
 
     const validToken = await this.tokenRepository.findOne({
-      where: { tutor, expiresAt: MoreThan(new Date()) },
+      where: { tutor, expires_at: MoreThan(new Date()) },
     });
 
     if (validToken && (await bcrypt.compare(token, validToken.token))) {
@@ -93,14 +94,14 @@ export class VerificationService {
     if (!tutor) throw new Error('Tuteur introuvable');
 
     const token = uuidv4();
-    const expiresAt = new Date(
+    const expires_at = new Date(
       Date.now() + 1000 * 60 * this.tokenExpirationMinutes,
     );
 
     await this.tokenRepository.insert({
       tutor,
       token: token,
-      expiresAt,
+      expires_at,
     });
 
     return token;
@@ -114,7 +115,7 @@ export class VerificationService {
       where: { tutor: { id: tutor.id }, token: token },
     });
 
-    if (!record || new Date(record.expiresAt) < new Date()) {
+    if (!record || new Date(record.expires_at) < new Date()) {
       throw new Error('Token invalide ou expiré');
     }
 
@@ -125,5 +126,10 @@ export class VerificationService {
     await this.tokenRepository.delete({ token });
   }
 
-  async cleanUpExpiredTokens() {}
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async cleanUpExpiredTokens() {
+    await this.tokenRepository.delete({
+      expires_at: LessThan(new Date()),
+    });
+  }
 }

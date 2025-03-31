@@ -21,8 +21,8 @@ export class Verification {
   token: string;
 
   @Column()
-  expiresAt: Date;
+  expires_at: Date;
 
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 }

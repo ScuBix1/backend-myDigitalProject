@@ -2,18 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { Student } from 'src/students/entities/student.entity';
+import { TutorSubscription } from 'src/subscriptions/entities/tutorSubscription.entity';
 import { Verification } from 'src/verification/entities/verification.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Subscription } from '../../subscriptions/entities/subscription.entity';
 
 @Entity()
 export class Tutor {
@@ -72,10 +70,10 @@ export class Tutor {
   customer_id: string;
 
   @Column({ default: 'inactif' })
-  accountStatus: 'actif' | 'inactif';
+  account_status: 'actif' | 'inactif';
 
   @Column({ nullable: true })
-  emailVerifiedAt: Date;
+  email_verified_at: Date;
 
   @ApiProperty({
     type: Number,
@@ -86,18 +84,8 @@ export class Tutor {
   @JoinColumn({ name: 'admin_id' })
   admin: Admin;
 
-  @ManyToMany(() => Subscription, (subscription) => subscription.tutors, {
-    onDelete: 'CASCADE',
-  })
-  @JoinTable({
-    name: 'tutor_subscription',
-    joinColumn: { name: 'tutor_id', referencedColumnName: 'id' },
-    inverseJoinColumn: {
-      name: 'subscription_id',
-      referencedColumnName: 'id',
-    },
-  })
-  subscriptions: Subscription[];
+  @OneToMany(() => TutorSubscription, (ts) => ts.tutor)
+  tutorSubscriptions: TutorSubscription[];
 
   @OneToMany(() => Student, (student) => student.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'student_id' })
