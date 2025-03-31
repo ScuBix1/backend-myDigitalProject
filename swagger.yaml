@@ -276,6 +276,21 @@ paths:
         '200':
           description: ''
       tags: *ref_3
+  /stripe/checkout-session:
+    post:
+      operationId: StripeController_createCheckoutSession
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCheckoutSessionDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - Stripe
   /sessions:
     post:
       operationId: SessionsController_create
@@ -594,10 +609,6 @@ components:
           type: boolean
           example: 'true'
           description: Autorisation pour modifier les jeux
-        tutor_id:
-          type: number
-          example: '1'
-          description: Id du tuteur
         email:
           type: string
           example: email@email.fr
@@ -676,6 +687,9 @@ components:
         - price
         - type
     UpdateSubscriptionDto:
+      type: object
+      properties: {}
+    CreateCheckoutSessionDto:
       type: object
       properties: {}
     CreateSessionDto:

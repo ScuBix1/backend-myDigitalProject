@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import Stripe from 'stripe';
 import { Repository } from 'typeorm';
+import { CreateCheckoutSessionDto } from './dto/create-checkout-session.dto';
 import { CreateStripeSubscriptionDto } from './dto/create-stripe-subscription.dto';
 
 @Injectable()
@@ -44,21 +45,21 @@ export class StripeService {
   }
 
   async createCheckoutSession(
-    customerId: string,
-    priceId: string,
+    createCheckoutSessionDto: CreateCheckoutSessionDto,
   ): Promise<string> {
+    const { customer_id, price_id } = createCheckoutSessionDto;
     const session = await this.stripe.checkout.sessions.create({
-      customer: customerId,
+      customer: customer_id,
       payment_method_types: ['card'],
       line_items: [
         {
-          price: priceId,
+          price: price_id,
           quantity: 1,
         },
       ],
       mode: 'subscription',
-      success_url: `${this.configService.get('BASE_URL')}/success`,
-      cancel_url: `${this.configService.get('BASE_URL')}/cancel`,
+      success_url: `${this.configService.get('URL_BASE')}/success`,
+      cancel_url: `${this.configService.get('URL_BASE')}/cancel`,
     });
     return session.url;
   }

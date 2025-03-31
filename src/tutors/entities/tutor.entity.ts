@@ -66,7 +66,7 @@ export class Tutor {
     example: 'cus_N1aB2C3D4E5F6G',
     description: 'ID du client stripe associé au tuteur',
   })
-  @Column()
+  @Column({ nullable: true })
   customer_id: string;
 
   @Column({ default: 'inactif' })

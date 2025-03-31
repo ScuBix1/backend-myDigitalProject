@@ -40,15 +40,6 @@ export class CreateAdminDto {
   manage_games: boolean;
 
   @ApiProperty({
-    example: '1',
-    description: 'Id du tuteur',
-    type: Number,
-    required: false,
-  })
-  @IsNotEmpty()
-  tutor_id: number;
-
-  @ApiProperty({
     example: 'email@email.fr',
     description: "Email de l'admin",
     type: String,

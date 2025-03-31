@@ -59,19 +59,12 @@ export class TutorsService {
         ...createTutorDto,
         admin: existingAdmin,
         password: hashedPassword,
+        customer_id: null,
       });
-
-      const customerId = await this.stripeService.createCustomer(tutor);
-
-      tutor.customer_id = customerId;
 
       const savedTutor = await this.tutorsRepository.save(tutor);
 
-      const {
-        password: tutorPassword,
-        customer_id,
-        ...tutorWithoutPassword
-      } = savedTutor;
+      const { password: tutorPassword, ...tutorWithoutPassword } = savedTutor;
 
       const { password: adminPassword, ...adminWithoutPassword } =
         savedTutor.admin;
@@ -128,7 +121,9 @@ export class TutorsService {
     if (!isValid) {
       throw new UnprocessableEntityException(invalidMessage);
     }
+    const customerId = await this.stripeService.createCustomer(tutor);
 
+    tutor.customer_id = customerId;
     tutor.email_verified_at = new Date();
     tutor.account_status = 'actif';
 
