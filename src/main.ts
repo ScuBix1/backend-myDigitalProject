@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
 import { writeFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import {
@@ -42,6 +43,11 @@ async function bootstrap() {
   }
 
   SwaggerModule.setup('api', app, documentFactory);
+
+  app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+
   await app.listen(3000);
 }
 bootstrap();

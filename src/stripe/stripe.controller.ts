@@ -1,4 +1,13 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Headers,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 import { CreateCheckoutSessionDto } from './dto/create-checkout-session.dto';
 import { StripeService } from './stripe.service';
 
@@ -16,5 +25,24 @@ export class StripeController {
       customer_id,
     });
     return session;
+  }
+
+  @Post('webhook')
+  async handleWebhook(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Headers('stripe-signature') signature: string,
+  ) {
+    try {
+      const event = await this.stripeService.handleWebhook(
+        request.body,
+        signature,
+      );
+
+      return response.status(HttpStatus.OK).send({ received: true });
+    } catch (err) {
+      console.log(err);
+      return response.status(HttpStatus.BAD_REQUEST).send(`Webhook Error`);
+    }
   }
 }

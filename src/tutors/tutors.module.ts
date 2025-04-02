@@ -3,7 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { MessageService } from 'src/message/message.service';
 import { StripeService } from 'src/stripe/stripe.service';
+import { Subscription } from 'src/subscriptions/entities/subscription.entity';
 import { TutorSubscription } from 'src/subscriptions/entities/tutorSubscription.entity';
+import { SubscriptionsService } from 'src/subscriptions/subscriptions.service';
 import { Verification } from 'src/verification/entities/verification.entity';
 import { VerificationService } from 'src/verification/verification.service';
 import { Tutor } from './entities/tutor.entity';
@@ -12,7 +14,13 @@ import { TutorsService } from './tutors.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Tutor, Admin, Verification, TutorSubscription]),
+    TypeOrmModule.forFeature([
+      Tutor,
+      Admin,
+      Verification,
+      TutorSubscription,
+      Subscription,
+    ]),
   ],
   controllers: [TutorsController],
   providers: [
@@ -20,6 +28,7 @@ import { TutorsService } from './tutors.service';
     VerificationService,
     MessageService,
     StripeService,
+    SubscriptionsService,
   ],
   exports: [TutorsService],
 })

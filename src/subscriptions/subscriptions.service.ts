@@ -1,24 +1,33 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SubscriptionType } from 'src/constants/enums/subscriptions.enum';
 import { StripeService } from 'src/stripe/stripe.service';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
-import { Repository } from 'typeorm';
+import { IsNull, LessThan, Repository } from 'typeorm';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { Subscription } from './entities/subscription.entity';
+import { TutorSubscription } from './entities/tutorSubscription.entity';
 
 @Injectable()
 export class SubscriptionsService {
-  @InjectRepository(Tutor)
-  private tutorsRepository: Repository<Tutor>;
-  @InjectRepository(Subscription)
-  private subscriptionsRepository: Repository<Subscription>;
-  constructor(private stripeService: StripeService) {}
+  constructor(
+    @InjectRepository(TutorSubscription)
+    private tutorSubRepo: Repository<TutorSubscription>,
+    @InjectRepository(Tutor)
+    private tutorsRepository: Repository<Tutor>,
+    @InjectRepository(Subscription)
+    private subscriptionsRepository: Repository<Subscription>,
+    @Inject(forwardRef(() => StripeService))
+    private stripeService: StripeService,
+  ) {}
 
   async create(createSubscriptionDto: CreateSubscriptionDto) {
     const { price, stripe_price_id, type } = createSubscriptionDto;
@@ -42,31 +51,110 @@ export class SubscriptionsService {
     return this.subscriptionsRepository.save(subscriptionSaved);
   }
 
-  async subscribeTutorToPlan(tutorId: number, subscriptionId: number) {
-    const tutor = await this.tutorsRepository.findOneBy({ id: tutorId });
+  async findOneByTutorId(tutorId: number) {
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: tutorId },
+    });
+    return this.tutorSubRepo.findOne({ where: { tutor: tutor } });
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async handleSubscriptionExpiration() {
+    const now = new Date();
+
+    const expired = await this.tutorSubRepo.find({
+      where: [
+        {
+          is_active: true,
+          end_date: IsNull(),
+        },
+        {
+          is_active: true,
+          end_date: LessThan(now),
+        },
+      ],
+    });
+
+    for (const sub of expired) {
+      sub.is_active = false;
+      await this.tutorSubRepo.save(sub);
+    }
+  }
+
+  async subscribeTutorToPlan(
+    customerId: string,
+    priceId: string,
+    stripeSubId: string,
+  ) {
+    const todayDate = new Date();
+    let startDate = todayDate;
+    let endDate: Date;
+    const tutor = await this.tutorsRepository.findOneBy({
+      customer_id: customerId,
+    });
     const subscription = await this.subscriptionsRepository.findOneBy({
-      id: subscriptionId,
+      stripe_price_id: priceId,
     });
 
     if (!tutor || !subscription) throw new NotFoundException();
 
-    const stripeSub = await this.stripeService.createSubscription({
-      customer_id: tutor.customer_id,
-      price_id: subscription.stripe_price_id,
+    if (subscription.type === SubscriptionType.TRY) {
+      const previousTrial = await this.tutorSubRepo.findOne({
+        where: {
+          tutor: { id: tutor.id },
+          subscription: { type: SubscriptionType.TRY },
+        },
+      });
+
+      if (previousTrial) {
+        throw new BadRequestException(
+          'Le tuteur a déjà bénéficié de l’offre d’essai.',
+        );
+      }
+      endDate = new Date(todayDate.getTime() + 15 * 24 * 60 * 60 * 1000);
+    }
+
+    const lastActiveSub = await this.tutorSubRepo.findOne({
+      where: {
+        tutor: { id: tutor.id },
+        is_active: true,
+      },
+      order: { end_date: 'DESC' },
     });
+
+    if (
+      lastActiveSub &&
+      lastActiveSub.end_date &&
+      lastActiveSub.end_date > todayDate
+    ) {
+      startDate = new Date(lastActiveSub.end_date);
+    }
+
+    if (subscription.type === SubscriptionType.MONTHLY) {
+      endDate = new Date(todayDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+    }
+
+    if (subscription.type === SubscriptionType.ANNUAL) {
+      endDate = new Date(todayDate);
+      endDate.setFullYear(endDate.getFullYear() + 1);
+    }
+
+    const tutorSubscription = this.tutorSubRepo.create({
+      stripe_subscription_id: stripeSubId,
+      tutor,
+      subscription,
+      is_active: true,
+      start_date: startDate,
+      end_date: endDate,
+    });
+
+    await this.tutorSubRepo.save(tutorSubscription);
 
     return {
       message: 'Abonnement créé',
-      stripe_subscription: stripeSub,
+      stripe_subscription: stripeSubId,
     };
-  }
-
-  findAll() {
-    return `This action returns all subscriptions`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} subscription`;
   }
 
   update(id: number, updateSubscriptionDto: UpdateSubscriptionDto) {
