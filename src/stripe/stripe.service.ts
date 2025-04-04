@@ -1,6 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Subscription } from 'src/subscriptions/entities/subscription.entity';
+import { SubscriptionsService } from 'src/subscriptions/subscriptions.service';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import Stripe from 'stripe';
 import { Repository } from 'typeorm';
@@ -10,10 +18,19 @@ import { CreateStripeSubscriptionDto } from './dto/create-stripe-subscription.dt
 @Injectable()
 export class StripeService {
   private stripe: Stripe;
-  @InjectRepository(Tutor)
-  private tutorsRepository: Repository<Tutor>;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    @Inject(forwardRef(() => SubscriptionsService))
+    private subscriptionsService: SubscriptionsService,
+
+    @InjectRepository(Subscription)
+    private subscriptionsRepository: Repository<Subscription>,
+
+    @InjectRepository(Tutor)
+    private tutorsRepository: Repository<Tutor>,
+
+    private configService: ConfigService,
+  ) {
     this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY'));
   }
 
@@ -78,5 +95,65 @@ export class StripeService {
     }
 
     return price;
+  }
+
+  async handleWebhook(req: Buffer, signature: string): Promise<Stripe.Event> {
+    const endpointSecret = this.configService.get<string>(
+      'STRIPE_WEBHOOK_SECRET',
+    );
+
+    let event: Stripe.Event;
+
+    try {
+      event = this.stripe.webhooks.constructEvent(
+        req,
+        signature,
+        endpointSecret,
+      );
+
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object as Stripe.Checkout.Session;
+
+        if (session.payment_status === 'paid') {
+          const customerId = session.customer as string;
+          const subscriptionId = session.subscription as string;
+
+          //TODO: replace with the [const subscriptionId = session.subscription as string;]
+          const stripeSubscription =
+            await this.stripe.subscriptions.retrieve(subscriptionId);
+
+          const priceId = stripeSubscription.items.data[0].price.id;
+
+          const subscription = await this.subscriptionsRepository.findOne({
+            where: { stripe_price_id: priceId },
+          });
+
+          if (!subscription) {
+            throw new NotFoundException("Aucun abonnement n'a été trouvé");
+          }
+
+          const tutor = await this.tutorsRepository.findOne({
+            where: { customer_id: customerId },
+          });
+
+          console.log(tutor);
+          if (!tutor) {
+            throw new NotFoundException("Aucun tuteur n'a été trouvé");
+          }
+
+          await this.subscriptionsService.subscribeTutorToPlan(
+            customerId,
+            priceId,
+            subscriptionId,
+          );
+        }
+      }
+
+      return event;
+    } catch (err) {
+      throw new BadRequestException(
+        `⚠️ Webhook signature vérification failed: ${err.message}`,
+      );
+    }
   }
 }

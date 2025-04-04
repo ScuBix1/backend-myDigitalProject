@@ -377,9 +377,11 @@
         "tags": [
           "Subscriptions"
         ]
-      },
+      }
+    },
+    "/subscriptions/verif": {
       "get": {
-        "operationId": "SubscriptionsController_findAll",
+        "operationId": "SubscriptionsController_verif",
         "parameters": [],
         "responses": {
           "200": {
@@ -392,27 +394,6 @@
       }
     },
     "/subscriptions/{id}": {
-      "get": {
-        "operationId": "SubscriptionsController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Subscriptions"
-        ]
-      },
       "patch": {
         "operationId": "SubscriptionsController_update",
         "parameters": [
@@ -480,6 +461,29 @@
             }
           }
         },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Stripe"
+        ]
+      }
+    },
+    "/stripe/webhook": {
+      "post": {
+        "operationId": "StripeController_handleWebhook",
+        "parameters": [
+          {
+            "name": "stripe-signature",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
