@@ -113,14 +113,17 @@ export class StripeService {
 
       if (event.type === 'checkout.session.completed') {
         const session = event.data.object as Stripe.Checkout.Session;
-
         if (session.payment_status === 'paid') {
           const customerId = session.customer as string;
           const subscriptionId = session.subscription as string;
 
-          //TODO: replace with the [const subscriptionId = session.subscription as string;]
-          const stripeSubscription =
-            await this.stripe.subscriptions.retrieve(subscriptionId);
+          //TODO: replace with the [const subscriptionId = session.subscription as string;] in prod
+          const stripeSubscription = await this.stripe.subscriptions.retrieve(
+            subscriptionId,
+            {
+              expand: ['latest_invoice.payment_intent'],
+            },
+          );
 
           const priceId = stripeSubscription.items.data[0].price.id;
 
@@ -136,7 +139,6 @@ export class StripeService {
             where: { customer_id: customerId },
           });
 
-          console.log(tutor);
           if (!tutor) {
             throw new NotFoundException("Aucun tuteur n'a été trouvé");
           }
@@ -151,9 +153,18 @@ export class StripeService {
 
       return event;
     } catch (err) {
-      throw new BadRequestException(
-        `⚠️ Webhook signature vérification failed: ${err.message}`,
-      );
+      throw new BadRequestException(`La vérification a échoué: ${err.message}`);
     }
+  }
+
+  async cancelSubscription(subscriptionId: string) {
+    const subscription = await this.stripe.subscriptions.update(
+      subscriptionId,
+      {
+        cancel_at_period_end: true,
+      },
+    );
+
+    return subscription;
   }
 }
