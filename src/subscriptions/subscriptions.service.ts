@@ -111,7 +111,7 @@ export class SubscriptionsService {
           'Le tuteur a déjà bénéficié de l’offre d’essai.',
         );
       }
-      endDate = new Date(todayDate.getTime() + 15 * 24 * 60 * 60 * 1000);
+      endDate = new Date(startDate.getTime() + 15 * 24 * 60 * 60 * 1000);
     }
 
     const lastActiveSub = await this.tutorSubRepo.findOne({
@@ -131,12 +131,12 @@ export class SubscriptionsService {
     }
 
     if (subscription.type === SubscriptionType.MONTHLY) {
-      endDate = new Date(todayDate);
+      endDate = new Date(startDate);
       endDate.setMonth(endDate.getMonth() + 1);
     }
 
     if (subscription.type === SubscriptionType.ANNUAL) {
-      endDate = new Date(todayDate);
+      endDate = new Date(startDate);
       endDate.setFullYear(endDate.getFullYear() + 1);
     }
 
