@@ -10,7 +10,6 @@ import { Grade } from 'src/grades/entities/grade.entity';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
 import { Student } from './entities/student.entity';
 
 @Injectable()
@@ -64,14 +63,10 @@ export class StudentsService {
   }
 
   findAll() {
-    return `This action returns all students`;
-  }
-
-  update(id: number, updateStudentDto: UpdateStudentDto) {
-    return `This action updates a #${id} student`;
+    return this.studentsRepository.find();
   }
 
   remove(id: number) {
-    return `This action removes a #${id} student`;
+    return this.studentsRepository.delete(id);
   }
 }
