@@ -27,10 +27,14 @@ export class Student {
   @Column()
   password: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   start_hour: Date;
 
-  @Column()
+  @Column({ type: 'int', nullable: true })
   duration: number;
 
   @ManyToOne(() => Tutor, (tutor) => tutor.students)
@@ -40,7 +44,7 @@ export class Student {
   @Column({
     type: 'enum',
     enum: Grades,
-    default: Grades.CP,
+    default: Grades.PS,
   })
   grade: Grades;
 

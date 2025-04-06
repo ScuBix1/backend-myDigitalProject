@@ -328,18 +328,6 @@ paths:
         '200':
           description: ''
       tags: *ref_5
-    delete:
-      operationId: SessionsController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-      tags: *ref_5
   /games:
     post:
       operationId: GamesController_create
@@ -529,11 +517,9 @@ components:
     Grades:
       type: string
       enum:
-        - cp
-        - ce1
-        - ce2
-        - cm1
-        - cm2
+        - PS
+        - MS
+        - GS
       description: Niveau de classe de l’élève
     CreateStudentDto:
       type: object
@@ -607,18 +593,18 @@ components:
           type: number
           example: 85
           description: Score de l'utilisateur (valeur entre 0 et 100)
-        studentId:
+        student_id:
           type: number
           example: 1
           description: ID de l'étudiant associé à cette session
-        gameId:
+        game_id:
           type: number
           example: 2
           description: ID du jeu associé à cette session
       required:
         - score
-        - studentId
-        - gameId
+        - student_id
+        - game_id
     UpdateSessionDto:
       type: object
       properties: {}
@@ -629,6 +615,10 @@ components:
           type: string
           example: Morpion
           description: Nom du jeu
+        score:
+          type: number
+          example: 85
+          description: Score de l'utilisateur (valeur entre 0 et 100)
         path:
           type: string
           example: /src/jeu/nom
@@ -640,5 +630,6 @@ components:
             - $ref: '#/components/schemas/Grades'
       required:
         - name
+        - score
         - path
         - grade
