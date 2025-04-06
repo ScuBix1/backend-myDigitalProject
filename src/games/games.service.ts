@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
-import { UpdateGameDto } from './dto/update-game.dto';
 
 @Injectable()
 export class GamesService {
@@ -14,10 +13,6 @@ export class GamesService {
 
   findOne(id: number) {
     return `This action returns a #${id} game`;
-  }
-
-  update(id: number, updateGameDto: UpdateGameDto) {
-    return `This action updates a #${id} game`;
   }
 
   remove(id: number) {

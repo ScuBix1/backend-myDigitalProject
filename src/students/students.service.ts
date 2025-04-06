@@ -5,8 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { isPresent } from 'src/constants/functions/isPresent';
-import { Grade } from 'src/grades/entities/grade.entity';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -19,12 +17,10 @@ export class StudentsService {
     private studentsRepository: Repository<Student>,
     @InjectRepository(Tutor)
     private tutorsRepository: Repository<Tutor>,
-    @InjectRepository(Grade)
-    private gradesRepository: Repository<Grade>,
   ) {}
 
   async create(createStudentDto: CreateStudentDto) {
-    const { tutor_id, grade_id } = createStudentDto;
+    const { tutor_id } = createStudentDto;
 
     const tutor = await this.tutorsRepository.findOne({
       where: { id: tutor_id },
@@ -33,33 +29,41 @@ export class StudentsService {
       throw new BadRequestException("Le tuteur spécifié n'existe pas");
     }
 
-    const grade = await this.gradesRepository.findOne({
-      where: { id: grade_id },
-    });
-    if (!grade) {
-      throw new BadRequestException("Le niveau scolaire spécifié n'existe pas");
-    }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(createStudentDto.password, salt);
-    const admin = this.studentsRepository.create({
+    const student = this.studentsRepository.create({
       ...createStudentDto,
       password: hashedPassword,
-      grade,
       tutor,
     });
 
-    return this.studentsRepository.save(admin);
+    return this.studentsRepository.save(student);
   }
 
   async findOneByUsername(username: string) {
     const student = await this.studentsRepository.findOne({
-      where: { username },
+      where: { username: username },
     });
-    if (isPresent(student)) {
-      return student;
+    if (!student) {
+      throw new NotFoundException('Utilisateur non trouvé');
     }
-    throw new NotFoundException('Utilisateur non trouvé');
+    return student;
+  }
+
+  async findOneByUsernameAndTutor(username: string, tutor_id: number) {
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: tutor_id },
+    });
+    if (!tutor) {
+      throw new NotFoundException("Le tuteur spécifié n'existe pas");
+    }
+    const student = await this.studentsRepository.findOne({
+      where: { username: username, tutor: tutor },
+    });
+    if (!student) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+    return student;
   }
 
   findAll() {

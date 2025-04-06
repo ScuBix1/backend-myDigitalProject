@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
   IsString,
 } from 'class-validator';
+import { Grades } from 'src/constants/enums/grades.enum';
 
 export class CreateStudentDto {
   @ApiProperty({ example: 'Doe', description: "Nom de l'étudiant" })
@@ -53,10 +55,12 @@ export class CreateStudentDto {
   tutor_id: number;
 
   @ApiProperty({
-    example: 2,
-    description: "ID du niveau scolaire de l'étudiant",
+    example: 'cm1',
+    description: 'Niveau de classe de l\’élève',
+    enumName: 'Grades',
+    enum: Grades,
   })
+  @IsEnum(Grades)
   @IsNotEmpty()
-  @IsInt()
-  grade_id: number;
+  grade: Grades;
 }

@@ -9,8 +9,6 @@ import { Admin } from './admins/entities/admin.entity';
 import { AuthModule } from './auth/auth.module';
 import { Game } from './games/entities/game.entity';
 import { GamesModule } from './games/games.module';
-import { Grade } from './grades/entities/grade.entity';
-import { GradesModule } from './grades/grades.module';
 import { Session } from './sessions/entities/session.entity';
 import { SessionsModule } from './sessions/sessions.module';
 import { StripeModule } from './stripe/stripe.module';
@@ -58,7 +56,6 @@ import { VerificationModule } from './verification/verification.module';
           Student,
           Game,
           Session,
-          Grade,
           Subscription,
           Verification,
           TutorSubscription,
@@ -74,7 +71,6 @@ import { VerificationModule } from './verification/verification.module';
     SubscriptionsModule,
     SessionsModule,
     GamesModule,
-    GradesModule,
     VerificationModule,
     StripeModule,
   ],

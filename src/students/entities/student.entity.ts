@@ -1,4 +1,4 @@
-import { Grade } from 'src/grades/entities/grade.entity';
+import { Grades } from 'src/constants/enums/grades.enum';
 import { Session } from 'src/sessions/entities/session.entity';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
@@ -37,9 +37,12 @@ export class Student {
   @JoinColumn({ name: 'tutor_id' })
   tutor: Tutor;
 
-  @ManyToOne(() => Grade, (grade) => grade.students)
-  @JoinColumn({ name: 'grade_id' })
-  grade: Grade;
+  @Column({
+    type: 'enum',
+    enum: Grades,
+    default: Grades.CP,
+  })
+  grade: Grades;
 
   @OneToMany(() => Session, (session) => session.id)
   @JoinColumn({ name: 'session_id' })
