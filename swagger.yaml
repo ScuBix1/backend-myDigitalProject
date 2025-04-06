@@ -181,24 +181,6 @@ paths:
           description: ''
       tags: *ref_2
   /students/{id}:
-    patch:
-      operationId: StudentsController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateStudentDto'
-      responses:
-        '200':
-          description: ''
-      tags: *ref_2
     delete:
       operationId: StudentsController_remove
       parameters:
@@ -346,18 +328,6 @@ paths:
         '200':
           description: ''
       tags: *ref_5
-    delete:
-      operationId: SessionsController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-      tags: *ref_5
   /games:
     post:
       operationId: GamesController_create
@@ -393,24 +363,6 @@ paths:
         '200':
           description: ''
       tags: *ref_6
-    patch:
-      operationId: GamesController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateGameDto'
-      responses:
-        '200':
-          description: ''
-      tags: *ref_6
     delete:
       operationId: GamesController_remove
       parameters:
@@ -423,71 +375,6 @@ paths:
         '200':
           description: ''
       tags: *ref_6
-  /grades:
-    post:
-      operationId: GradesController_create
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateGradeDto'
-      responses:
-        '201':
-          description: ''
-      tags: &ref_7
-        - Grades
-    get:
-      operationId: GradesController_findAll
-      parameters: []
-      responses:
-        '200':
-          description: ''
-      tags: *ref_7
-  /grades/{id}:
-    get:
-      operationId: GradesController_findOne
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-      tags: *ref_7
-    patch:
-      operationId: GradesController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateGradeDto'
-      responses:
-        '200':
-          description: ''
-      tags: *ref_7
-    delete:
-      operationId: GradesController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-      tags: *ref_7
 info:
   title: Math&Magique
   description: Description de l'API de Math&Magique
@@ -627,6 +514,13 @@ components:
         - manage_games
         - email
         - password
+    Grades:
+      type: string
+      enum:
+        - PS
+        - MS
+        - GS
+      description: Niveau de classe de l’élève
     CreateStudentDto:
       type: object
       properties:
@@ -658,10 +552,11 @@ components:
           type: number
           example: 1
           description: ID du tuteur associé à l'étudiant
-        grade_id:
-          type: number
-          example: 2
-          description: ID du niveau scolaire de l'étudiant
+        grade:
+          example: cm1
+          description: Niveau de classe de l’élève
+          allOf:
+            - $ref: '#/components/schemas/Grades'
       required:
         - lastname
         - firstname
@@ -670,10 +565,7 @@ components:
         - start_hour
         - duration
         - tutor_id
-        - grade_id
-    UpdateStudentDto:
-      type: object
-      properties: {}
+        - grade
     CreateSubscriptionDto:
       type: object
       properties:
@@ -701,30 +593,21 @@ components:
           type: number
           example: 85
           description: Score de l'utilisateur (valeur entre 0 et 100)
-        studentId:
+        student_id:
           type: number
           example: 1
           description: ID de l'étudiant associé à cette session
-        gameId:
+        game_id:
           type: number
           example: 2
           description: ID du jeu associé à cette session
       required:
         - score
-        - studentId
-        - gameId
+        - student_id
+        - game_id
     UpdateSessionDto:
       type: object
       properties: {}
-    Grades:
-      type: string
-      enum:
-        - cp
-        - ce1
-        - ce2
-        - cm1
-        - cm2
-      description: Niveau de classe de l’élève
     CreateGameDto:
       type: object
       properties:
@@ -732,6 +615,10 @@ components:
           type: string
           example: Morpion
           description: Nom du jeu
+        score:
+          type: number
+          example: 85
+          description: Score de l'utilisateur (valeur entre 0 et 100)
         path:
           type: string
           example: /src/jeu/nom
@@ -743,21 +630,6 @@ components:
             - $ref: '#/components/schemas/Grades'
       required:
         - name
+        - score
         - path
         - grade
-    UpdateGameDto:
-      type: object
-      properties: {}
-    CreateGradeDto:
-      type: object
-      properties:
-        type:
-          example: cm1
-          description: Niveau de classe de l’élève
-          allOf:
-            - $ref: '#/components/schemas/Grades'
-      required:
-        - type
-    UpdateGradeDto:
-      type: object
-      properties: {}

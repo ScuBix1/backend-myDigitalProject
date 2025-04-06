@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 import { Grades } from 'src/constants/enums/grades.enum';
 
 export class CreateGameDto {
@@ -11,6 +12,15 @@ export class CreateGameDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({
+    example: 85,
+    description: "Score de l'utilisateur (valeur entre 0 et 100)",
+    type: Number,
+  })
+  @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
+  @IsInt({ message: i18nValidationMessage('validation.isInt') })
+  score: number;
 
   @ApiProperty({
     example: '/src/jeu/nom',

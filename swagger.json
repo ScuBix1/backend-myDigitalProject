@@ -302,37 +302,6 @@
       }
     },
     "/students/{id}": {
-      "patch": {
-        "operationId": "StudentsController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateStudentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Students"
-        ]
-      },
       "delete": {
         "operationId": "StudentsController_remove",
         "parameters": [
@@ -582,27 +551,6 @@
         "tags": [
           "Sessions"
         ]
-      },
-      "delete": {
-        "operationId": "SessionsController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Sessions"
-        ]
       }
     },
     "/games": {
@@ -663,37 +611,6 @@
           "Games"
         ]
       },
-      "patch": {
-        "operationId": "GamesController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateGameDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Games"
-        ]
-      },
       "delete": {
         "operationId": "GamesController_remove",
         "parameters": [
@@ -713,117 +630,6 @@
         },
         "tags": [
           "Games"
-        ]
-      }
-    },
-    "/grades": {
-      "post": {
-        "operationId": "GradesController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateGradeDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Grades"
-        ]
-      },
-      "get": {
-        "operationId": "GradesController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Grades"
-        ]
-      }
-    },
-    "/grades/{id}": {
-      "get": {
-        "operationId": "GradesController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Grades"
-        ]
-      },
-      "patch": {
-        "operationId": "GradesController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateGradeDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Grades"
-        ]
-      },
-      "delete": {
-        "operationId": "GradesController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Grades"
         ]
       }
     }
@@ -1000,6 +806,15 @@
           "password"
         ]
       },
+      "Grades": {
+        "type": "string",
+        "enum": [
+          "PS",
+          "MS",
+          "GS"
+        ],
+        "description": "Niveau de classe de l’élève"
+      },
       "CreateStudentDto": {
         "type": "object",
         "properties": {
@@ -1038,10 +853,14 @@
             "example": 1,
             "description": "ID du tuteur associé à l'étudiant"
           },
-          "grade_id": {
-            "type": "number",
-            "example": 2,
-            "description": "ID du niveau scolaire de l'étudiant"
+          "grade": {
+            "example": "cm1",
+            "description": "Niveau de classe de l’élève",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Grades"
+              }
+            ]
           }
         },
         "required": [
@@ -1052,12 +871,8 @@
           "start_hour",
           "duration",
           "tutor_id",
-          "grade_id"
+          "grade"
         ]
-      },
-      "UpdateStudentDto": {
-        "type": "object",
-        "properties": {}
       },
       "CreateSubscriptionDto": {
         "type": "object",
@@ -1094,12 +909,12 @@
             "example": 85,
             "description": "Score de l'utilisateur (valeur entre 0 et 100)"
           },
-          "studentId": {
+          "student_id": {
             "type": "number",
             "example": 1,
             "description": "ID de l'étudiant associé à cette session"
           },
-          "gameId": {
+          "game_id": {
             "type": "number",
             "example": 2,
             "description": "ID du jeu associé à cette session"
@@ -1107,24 +922,13 @@
         },
         "required": [
           "score",
-          "studentId",
-          "gameId"
+          "student_id",
+          "game_id"
         ]
       },
       "UpdateSessionDto": {
         "type": "object",
         "properties": {}
-      },
-      "Grades": {
-        "type": "string",
-        "enum": [
-          "cp",
-          "ce1",
-          "ce2",
-          "cm1",
-          "cm2"
-        ],
-        "description": "Niveau de classe de l’élève"
       },
       "CreateGameDto": {
         "type": "object",
@@ -1133,6 +937,11 @@
             "type": "string",
             "example": "Morpion",
             "description": "Nom du jeu"
+          },
+          "score": {
+            "type": "number",
+            "example": 85,
+            "description": "Score de l'utilisateur (valeur entre 0 et 100)"
           },
           "path": {
             "type": "string",
@@ -1151,34 +960,10 @@
         },
         "required": [
           "name",
+          "score",
           "path",
           "grade"
         ]
-      },
-      "UpdateGameDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "CreateGradeDto": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "example": "cm1",
-            "description": "Niveau de classe de l’élève",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Grades"
-              }
-            ]
-          }
-        },
-        "required": [
-          "type"
-        ]
-      },
-      "UpdateGradeDto": {
-        "type": "object",
-        "properties": {}
       }
     }
   }

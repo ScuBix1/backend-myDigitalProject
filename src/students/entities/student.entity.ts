@@ -1,4 +1,4 @@
-import { Grade } from 'src/grades/entities/grade.entity';
+import { Grades } from 'src/constants/enums/grades.enum';
 import { Session } from 'src/sessions/entities/session.entity';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
@@ -27,19 +27,26 @@ export class Student {
   @Column()
   password: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   start_hour: Date;
 
-  @Column()
+  @Column({ type: 'int', nullable: true })
   duration: number;
 
   @ManyToOne(() => Tutor, (tutor) => tutor.students)
   @JoinColumn({ name: 'tutor_id' })
   tutor: Tutor;
 
-  @ManyToOne(() => Grade, (grade) => grade.students)
-  @JoinColumn({ name: 'grade_id' })
-  grade: Grade;
+  @Column({
+    type: 'enum',
+    enum: Grades,
+    default: Grades.PS,
+  })
+  grade: Grades;
 
   @OneToMany(() => Session, (session) => session.id)
   @JoinColumn({ name: 'session_id' })

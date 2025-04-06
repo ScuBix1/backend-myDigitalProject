@@ -1,19 +1,10 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import { CreateStudentDto } from './dto/create-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentsService } from './students.service';
 
 @Controller('students')
@@ -36,11 +27,6 @@ export class StudentsController {
   @Get()
   findAll() {
     return this.studentsService.findAll();
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-    return this.studentsService.update(+id, updateStudentDto);
   }
 
   @Delete(':id')

@@ -1,3 +1,4 @@
+import { IsInt } from 'class-validator';
 import { Grades } from 'src/constants/enums/grades.enum';
 import { Session } from 'src/sessions/entities/session.entity';
 import {
@@ -17,12 +18,16 @@ export class Game {
   name: string;
 
   @Column()
+  @IsInt()
+  score: number;
+
+  @Column()
   path: string;
 
   @Column({
     type: 'enum',
     enum: Grades,
-    default: Grades.CP,
+    default: Grades.PS,
   })
   grade: Grades;
 
