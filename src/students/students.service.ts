@@ -38,8 +38,7 @@ export class StudentsService {
     });
 
     const { id, password, ...rest } = student;
-    const { id: idTutor, password: passwordTutor, ...restTutor } = tutor;
-    console.log(restTutor);
+    const { id: idTutor } = tutor;
     await this.studentsRepository.save(student);
     return { ...rest, tutor: idTutor };
   }
