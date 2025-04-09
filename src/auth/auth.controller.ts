@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
 import { TutorsService } from 'src/tutors/tutors.service';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -33,7 +33,7 @@ export class AuthController {
     return this.authService.sendForgotPasswordEmail(email);
   }
 
-  @Post('reset-password/:token')
+  @Patch('reset-password/:token')
   async resetPassword(
     @Param('token') token: string,
     @Body() resetPasswordDto: ResetPasswordDto,
@@ -41,5 +41,22 @@ export class AuthController {
     const { email, password } = resetPasswordDto;
 
     return this.authService.resetPassword(token, email, password);
+  }
+
+  @Post('forgot-admin-password')
+  async forgotAdminPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    const { email } = forgotPasswordDto;
+
+    return this.authService.sendForgotAdminPasswordEmail(email);
+  }
+
+  @Patch('reset-admin-password/:token')
+  async resetAdminPassword(
+    @Param('token') token: string,
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ) {
+    const { email, password } = resetPasswordDto;
+
+    return this.authService.resetAdminPassword(token, email, password);
   }
 }

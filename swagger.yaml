@@ -40,7 +40,7 @@ paths:
           description: ''
       tags: *ref_0
   /auth/reset-password/{token}:
-    post:
+    patch:
       operationId: AuthController_resetPassword
       parameters:
         - name: token
@@ -55,7 +55,40 @@ paths:
             schema:
               $ref: '#/components/schemas/ResetPasswordDto'
       responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /auth/forgot-admin-password:
+    post:
+      operationId: AuthController_forgotAdminPassword
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordDto'
+      responses:
         '201':
+          description: ''
+      tags: *ref_0
+  /auth/reset-admin-password/{token}:
+    patch:
+      operationId: AuthController_resetAdminPassword
+      parameters:
+        - name: token
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordDto'
+      responses:
+        '200':
           description: ''
       tags: *ref_0
   /tutors/sign-up:

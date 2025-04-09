@@ -69,7 +69,8 @@ export class SessionsService {
     return this.sessionsRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateSessionDto: UpdateSessionDto) {
-    return this.sessionsRepository.update(id, updateSessionDto);
+  async update(id: number, updateSessionDto: UpdateSessionDto) {
+    await this.sessionsRepository.update(id, updateSessionDto);
+    return updateSessionDto;
   }
 }
