@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { AdminsService } from 'src/admins/admins.service';
+import { Admin } from 'src/admins/entities/admin.entity';
 import { MessageService } from 'src/message/message.service';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { TutorsService } from 'src/tutors/tutors.service';
@@ -28,6 +29,8 @@ export class AuthService {
     private configService: ConfigService,
     @InjectRepository(Tutor)
     private tutorsRepository: Repository<Tutor>,
+    @InjectRepository(Admin)
+    private adminsRepository: Repository<Admin>,
   ) {}
 
   async validateUser(loginDto: LoginDto) {
@@ -65,7 +68,7 @@ export class AuthService {
       const payload = {
         id: admin.id,
         username: admin.email,
-        password: admin.password,
+        role: 'admin',
       };
 
       return {
@@ -84,7 +87,7 @@ export class AuthService {
       const payload = {
         id: tutor.id,
         username: tutor.email,
-        password: tutor.password,
+        role: 'tutor',
       };
 
       return {
@@ -103,11 +106,11 @@ export class AuthService {
       const payload = {
         id: student.id,
         username: student.username,
-        password: student.password,
+        role: 'student',
       };
 
       return {
-        email: student.username,
+        username: student.username,
         access_token: this.jwtService.sign(payload),
       };
     }
@@ -140,6 +143,37 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     tutor.password = hashedPassword;
     await this.tutorsRepository.save(tutor);
+
+    await this.verificationService.deleteResetToken(token);
+
+    return { message: 'Mot de passe réinitialisé avec succès' };
+  }
+
+  async sendForgotAdminPasswordEmail(email: string) {
+    const admin = await this.adminsRepository.findOne({ where: { email } });
+    if (!admin) throw new NotFoundException('Aucun administrateur trouvé');
+
+    const reset = await this.verificationService.generateResetToken(email);
+
+    const resetLink = `${this.configService.get('URL')}/${reset}`;
+
+    await this.MessageService.sendEmail({
+      subject: 'Réinitialisation du mot de passe',
+      recipients: [{ address: email }],
+      html: `<p>Voici votre lien : <a href="${resetLink}">${resetLink}</a></p>`,
+      text: 'text',
+    });
+
+    return { message: 'Email de réinitialisation envoyé.' };
+  }
+
+  async resetAdminPassword(token: string, email: string, newPassword: string) {
+    const admin = await this.verificationService.verifyResetToken(token, email);
+    if (!admin) throw new NotFoundException('Utilisateur non trouvé');
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    admin.password = hashedPassword;
+    await this.adminsRepository.save(admin);
 
     await this.verificationService.deleteResetToken(token);
 

@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
-import { SessionsService } from './sessions.service';
-import { SessionsController } from './sessions.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Game } from 'src/games/entities/game.entity';
+import { Student } from 'src/students/entities/student.entity';
 import { Session } from './entities/session.entity';
+import { SessionsController } from './sessions.controller';
+import { SessionsService } from './sessions.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Session])],
+  imports: [TypeOrmModule.forFeature([Session, Game, Student])],
   controllers: [SessionsController],
   providers: [SessionsService],
   exports: [SessionsService],

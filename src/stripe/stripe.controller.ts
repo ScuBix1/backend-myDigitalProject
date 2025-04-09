@@ -41,7 +41,6 @@ export class StripeController {
 
       return response.status(HttpStatus.OK).send({ received: true });
     } catch (err) {
-      console.log(err);
       return response.status(HttpStatus.BAD_REQUEST).send(`Webhook Error`);
     }
   }

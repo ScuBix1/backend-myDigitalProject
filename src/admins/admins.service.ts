@@ -46,4 +46,21 @@ export class AdminsService {
 
     throw new NotFoundException('Utilisateur non trouvé');
   }
+
+  async update(
+    id: number,
+    updateAdminDto: Partial<CreateAdminDto>,
+  ): Promise<Admin> {
+    const admin = await this.adminsRepository.findOne({
+      where: { id },
+    });
+
+    if (!admin) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    Object.assign(admin, updateAdminDto);
+
+    return this.adminsRepository.save(admin);
+  }
 }

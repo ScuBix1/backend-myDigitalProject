@@ -38,9 +38,9 @@ export class StudentsService {
     });
 
     const { id, password, ...rest } = student;
-    const { id: idTutor, password: passwordTutor, ...restTutor } = tutor;
+    const { id: idTutor } = tutor;
     await this.studentsRepository.save(student);
-    return { tutor: restTutor, ...rest };
+    return { ...rest, tutor: idTutor };
   }
 
   async findOneByUsername(username: string) {
