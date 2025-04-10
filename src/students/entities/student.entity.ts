@@ -21,7 +21,10 @@ export class Student {
   @Column()
   firstname: string;
 
-  @Column()
+  @Column({
+    unique: true,
+    nullable: false,
+  })
   username: string;
 
   @Column()

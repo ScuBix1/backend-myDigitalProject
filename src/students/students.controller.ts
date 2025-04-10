@@ -4,7 +4,9 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -40,6 +42,16 @@ export class StudentsController {
   @Get()
   findAll() {
     return this.studentsService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('tutor')
+  @Get(':id')
+  findAllStudentsByTutor(@Req() req, @Param('id', ParseIntPipe) id: number) {
+    return this.studentsService.findAllStudentsByTutor(
+      id,
+      parseInt(req.user.id),
+    );
   }
 
   @Delete(':id')
