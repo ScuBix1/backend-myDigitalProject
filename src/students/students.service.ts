@@ -20,7 +20,17 @@ export class StudentsService {
   ) {}
 
   async create(createStudentDto: CreateStudentDto) {
-    const { tutor_id } = createStudentDto;
+    const { tutor_id, username } = createStudentDto;
+
+    const existingStudent = await this.studentsRepository.findOne({
+      where: { username: username },
+    });
+
+    if (existingStudent) {
+      throw new BadRequestException(
+        "Un étudiant avec ce nom d'utilisateur existe déjà",
+      );
+    }
 
     const tutor = await this.tutorsRepository.findOne({
       where: { id: tutor_id },
@@ -69,8 +79,48 @@ export class StudentsService {
     return student;
   }
 
-  findAll() {
-    return this.studentsRepository.find();
+  async findAll() {
+    const students = await this.studentsRepository.find({
+      relations: ['tutor'],
+    });
+    const studentsResponse = [];
+    students.map((student) => {
+      const { lastname, firstname, username, tutor } = student;
+      const { id } = tutor;
+      studentsResponse.push({
+        lastname,
+        firstname,
+        username,
+        tutor: id,
+      });
+    });
+    return studentsResponse;
+  }
+
+  async findAllStudentsByTutor(tutor_id: number, jwtTutorId: number) {
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: tutor_id },
+    });
+    if (!tutor) {
+      throw new NotFoundException("Le tuteur spécifié n'existe pas");
+    }
+    if (tutor.id !== jwtTutorId) {
+      throw new NotFoundException("Ce n'est pas votre ID");
+    }
+    const students = await this.studentsRepository.find({
+      where: { tutor: tutor },
+    });
+    const studentsResponse = [];
+    students.map((student) => {
+      const { id, lastname, firstname, username } = student;
+      studentsResponse.push({
+        id,
+        lastname,
+        firstname,
+        username,
+      });
+    });
+    return studentsResponse;
   }
 
   remove(id: number) {

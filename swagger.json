@@ -359,6 +359,27 @@
       }
     },
     "/students/{id}": {
+      "get": {
+        "operationId": "StudentsController_findAllStudentsByTutor",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Students"
+        ]
+      },
       "delete": {
         "operationId": "StudentsController_remove",
         "parameters": [
