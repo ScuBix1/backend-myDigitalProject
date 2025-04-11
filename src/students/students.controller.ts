@@ -15,6 +15,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ActiveSubscriptionGuard } from 'src/auth/guards/active-subscription.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -44,8 +45,7 @@ export class StudentsController {
     return this.studentsService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('tutor')
+  @UseGuards(JwtAuthGuard, ActiveSubscriptionGuard)
   @Get(':id')
   findAllStudentsByTutor(@Req() req, @Param('id', ParseIntPipe) id: number) {
     return this.studentsService.findAllStudentsByTutor(

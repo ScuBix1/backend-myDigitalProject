@@ -83,7 +83,6 @@ export class StudentsService {
     const students = await this.studentsRepository.find({
       relations: ['tutor'],
     });
-    console.log(students);
     const studentsResponse = [];
     students.map((student) => {
       const { lastname, firstname, username, tutor } = student;
