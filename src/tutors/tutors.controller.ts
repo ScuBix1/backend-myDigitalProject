@@ -2,21 +2,19 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
-  Get,
   Param,
   Post,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
   ApiOperation,
-  ApiQuery,
 } from '@nestjs/swagger';
 import { CurrentTutor } from 'src/auth/decorators/current-tutor.decorator';
 import { NoAccountGuard } from 'src/auth/decorators/no-account-guard.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateTutorDto } from './dto/create-tutor.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Tutor } from './entities/tutor.entity';
@@ -39,24 +37,8 @@ export class TutorsController {
     return this.tutorsService.create(createTutorDto);
   }
 
-  @ApiOperation({ summary: 'Récupère un tuteur en fonction de son email' })
-  @Get()
-  @ApiQuery({
-    name: 'email',
-    type: String,
-    description: 'Email du tuteur recherché',
-    required: true,
-  })
-  @ApiOkResponse({ description: 'Retourne un tuteur', type: Tutor })
-  @ApiNotFoundResponse({
-    description: "Le tuteur avec l'email demandé n'est pas trouvé",
-  })
-  @ApiBadRequestResponse({ description: "L'email du tuteur est invalide" })
-  findOne(@Body('email') email: string) {
-    return this.tutorsService.findOneByEmail(email);
-  }
-
   @NoAccountGuard()
+  @UseGuards(JwtAuthGuard)
   @Post('verification-otp')
   async generateEmailVerification(@CurrentTutor() tutor: Tutor) {
     await this.tutorsService.generateEmailVerification(tutor.email);
