@@ -192,44 +192,6 @@
         ]
       }
     },
-    "/tutors": {
-      "get": {
-        "operationId": "TutorsController_findOne",
-        "parameters": [
-          {
-            "name": "email",
-            "required": true,
-            "in": "query",
-            "description": "Email du tuteur recherché",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Retourne un tuteur",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Tutor"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "L'email du tuteur est invalide"
-          },
-          "404": {
-            "description": "Le tuteur avec l'email demandé n'est pas trouvé"
-          }
-        },
-        "summary": "Récupère un tuteur en fonction de son email",
-        "tags": [
-          "Tutors"
-        ]
-      }
-    },
     "/tutors/verification-otp": {
       "post": {
         "operationId": "TutorsController_generateEmailVerification",
@@ -426,12 +388,12 @@
         ]
       }
     },
-    "/subscriptions/verif": {
-      "get": {
-        "operationId": "SubscriptionsController_verif",
+    "/subscriptions/verify-expired": {
+      "post": {
+        "operationId": "SubscriptionsController_verifyExpired",
         "parameters": [],
         "responses": {
-          "200": {
+          "201": {
             "description": ""
           }
         },
@@ -785,62 +747,6 @@
           "lastname",
           "firstname",
           "admin_id"
-        ]
-      },
-      "Tutor": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID du tuteur"
-          },
-          "email": {
-            "type": "string",
-            "example": "email@email.fr",
-            "description": "Email du tuteur"
-          },
-          "password": {
-            "type": "string",
-            "example": "Azertyuiop123456789!",
-            "description": "Mot de passe du tuteur (1 majuscule, 1 minuscule, 8 caractères minimum, 1 caractère spéciale) "
-          },
-          "dob": {
-            "format": "date-time",
-            "type": "string",
-            "example": "20001/02/17",
-            "description": "Date de naissance du tuteur"
-          },
-          "lastname": {
-            "type": "string",
-            "example": "Doe",
-            "description": "Nom du tuteur"
-          },
-          "firstname": {
-            "type": "string",
-            "example": "John",
-            "description": "Prénom du tuteur"
-          },
-          "customer_id": {
-            "type": "string",
-            "example": "cus_N1aB2C3D4E5F6G",
-            "description": "ID du client stripe associé au tuteur"
-          },
-          "admin": {
-            "type": "number",
-            "example": 3,
-            "description": "ID de l'administrateur qui à les droits sur le tuteur"
-          }
-        },
-        "required": [
-          "id",
-          "email",
-          "password",
-          "dob",
-          "lastname",
-          "firstname",
-          "customer_id",
-          "admin"
         ]
       },
       "VerifyEmailDto": {

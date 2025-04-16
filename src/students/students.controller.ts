@@ -16,6 +16,7 @@ import {
 } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { ActiveSubscriptionGuard } from 'src/auth/guards/active-subscription.guard';
+import { IsTutorOfStudentGuard } from 'src/auth/guards/is-tutor-of-student.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -34,6 +35,7 @@ export class StudentsController {
   @ApiBadRequestResponse({
     description: 'Les informations saisies sont invalides',
   })
+  @UseGuards(JwtAuthGuard, ActiveSubscriptionGuard)
   create(@Body() createStudentDto: CreateStudentDto) {
     return this.studentsService.create(createStudentDto);
   }
@@ -54,8 +56,9 @@ export class StudentsController {
     );
   }
 
+  @UseGuards(JwtAuthGuard, IsTutorOfStudentGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentsService.remove(+id);
+  remove(@Param('id') id: string, @Body('tutor_id') idTutor: number) {
+    return this.studentsService.remove(+id, idTutor);
   }
 }

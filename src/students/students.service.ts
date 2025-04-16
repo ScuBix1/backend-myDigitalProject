@@ -123,7 +123,28 @@ export class StudentsService {
     return studentsResponse;
   }
 
-  remove(id: number) {
-    return this.studentsRepository.delete(id);
+  async remove(id: number, idTutor: number) {
+    const student = await this.studentsRepository.findOne({
+      where: { id: id },
+      relations: ['tutor'],
+    });
+
+    if (!student) {
+      throw new NotFoundException("L'étudiant spécifié n'existe pas");
+    }
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: idTutor },
+    });
+
+    if (!tutor) {
+      throw new NotFoundException("Le tuteur spécifié n'existe pas");
+    }
+
+    if (student.tutor.id !== tutor.id) {
+      throw new NotFoundException("Ce n'est pas votre étudiant");
+    }
+
+    await this.studentsRepository.delete(id);
+    return `Votre élève ${student.firstname} ${student.lastname} a été supprimé`;
   }
 }

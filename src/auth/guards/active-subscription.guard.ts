@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -32,11 +33,18 @@ export class ActiveSubscriptionGuard implements CanActivate {
         tutor: { id: user.id },
         is_active: true,
       },
+      relations: ['tutor'],
     });
 
     if (!sub || new Date(sub.end_date) < new Date()) {
       throw new ForbiddenException(
         "Vous n'avez pas d'abonnement actif pour accéder à cette ressource.",
+      );
+    }
+
+    if (sub.tutor && sub.tutor.account_status !== 'actif') {
+      throw new UnauthorizedException(
+        'Vous devez vérifier votre adresse email',
       );
     }
 
