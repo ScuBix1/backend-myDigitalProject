@@ -11,29 +11,29 @@ import {
 @Entity('tutor_subscription')
 export class TutorSubscription {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @ManyToOne(() => Tutor, (tutor) => tutor.tutorSubscriptions, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'tutor_id' })
-  tutor: Tutor;
+  tutor!: Tutor;
 
   @ManyToOne(() => Subscription, (sub) => sub.tutorSubscriptions, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'subscription_id' })
-  subscription: Subscription;
+  subscription!: Subscription;
 
   @Column({ nullable: true })
-  stripe_subscription_id: string;
+  stripe_subscription_id?: string;
 
   @Column({ default: false })
-  is_active: boolean;
+  is_active!: boolean;
 
   @Column({ type: 'timestamp', nullable: true })
-  start_date: Date;
+  start_date!: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  end_date: Date;
+  end_date!: Date;
 }

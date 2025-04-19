@@ -11,18 +11,18 @@ import {
 @Entity()
 export class Session {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  score: number;
+  score!: number;
 
   @ManyToOne(() => Student, (student) => student.sessions, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'student_id' })
-  student: Student;
+  student!: Student;
 
   @ManyToOne(() => Game, (game) => game.sessions)
   @JoinColumn({ name: 'game_id' })
-  game: Game;
+  game!: Game;
 }

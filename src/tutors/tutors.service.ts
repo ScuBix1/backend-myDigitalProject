@@ -6,12 +6,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { plainToInstance } from 'class-transformer';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { MessageService } from 'src/message/message.service';
 import { VerificationService } from 'src/verification/verification.service';
 import { Repository } from 'typeorm';
 import { StripeService } from '../stripe/stripe.service';
 import { CreateTutorDto } from './dto/create-tutor.dto';
+import { ResponseTutorDto } from './dto/response-tutor.dto';
 import { Tutor } from './entities/tutor.entity';
 
 @Injectable()
@@ -64,16 +66,11 @@ export class TutorsService {
 
       const savedTutor = await this.tutorsRepository.save(tutor);
 
-      const { password: tutorPassword, ...tutorWithoutPassword } = savedTutor;
+      const responseSavedTutor = plainToInstance(ResponseTutorDto, savedTutor);
 
-      const { password: adminPassword, ...adminWithoutPassword } =
-        savedTutor.admin;
-
-      return { ...tutorWithoutPassword, ...adminWithoutPassword };
-    } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
-        throw new UnauthorizedException('Un tuteur avec cet email existe déjà');
-      }
+      return responseSavedTutor;
+    } catch {
+      throw new UnauthorizedException('Un tuteur avec cet email existe déjà');
     }
   }
 
@@ -88,7 +85,7 @@ export class TutorsService {
       throw new UnprocessableEntityException('Compte déjà vérifié');
     }
 
-    const otp = await this.verificationTokenService.generateOtp(tutor.id);
+    const otp = await this.verificationTokenService.generateOtp(tutor.id ?? 0);
 
     await this.MessageService.sendEmail({
       subject: 'Math&Magique - Vérification du compte',

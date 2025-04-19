@@ -13,45 +13,45 @@ import {
 @Entity()
 export class Student {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  lastname: string;
+  lastname!: string;
 
   @Column()
-  firstname: string;
+  firstname!: string;
 
   @Column({
     unique: true,
     nullable: false,
   })
-  username: string;
+  username!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column({
     type: 'timestamp',
     nullable: true,
     default: () => 'CURRENT_TIMESTAMP',
   })
-  start_hour: Date;
+  start_hour?: Date;
 
   @Column({ type: 'int', nullable: true })
-  duration: number;
+  duration?: number;
 
   @ManyToOne(() => Tutor, (tutor) => tutor.students)
   @JoinColumn({ name: 'tutor_id' })
-  tutor: Tutor;
+  tutor!: Tutor;
 
   @Column({
     type: 'enum',
     enum: Grades,
     default: Grades.PS,
   })
-  grade: Grades;
+  grade!: Grades;
 
   @OneToMany(() => Session, (session) => session.id)
   @JoinColumn({ name: 'session_id' })
-  sessions: Session[];
+  sessions?: Session[];
 }

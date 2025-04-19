@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { plainToInstance } from 'class-transformer';
 import { Game } from 'src/games/entities/game.entity';
 import { Student } from 'src/students/entities/student.entity';
 import { Repository } from 'typeorm';
 import { CreateSessionDto } from './dto/create-session.dto';
+import { ResponseSessionDto } from './dto/response-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
 import { Session } from './entities/session.entity';
 
@@ -57,8 +59,8 @@ export class SessionsService {
     await this.sessionsRepository.save(session);
     const { id: idStudent } = student;
     const { id: idGame } = game;
-    const { id, ...rest } = session;
-    return { ...rest, game: idGame, student: idStudent };
+    const responseSavedSession = plainToInstance(ResponseSessionDto, session);
+    return { responseSavedSession, game: idGame, student: idStudent };
   }
 
   findAll() {

@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { plainToInstance } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
+import { ResponseGameDto } from './dto/response-game.dto';
 import { Game } from './entities/game.entity';
 
 @Injectable()
@@ -13,9 +15,9 @@ export class GamesService {
 
   async create(createGameDto: CreateGameDto) {
     const game = this.gamesRepository.create(createGameDto);
-    this.gamesRepository.save(game);
-    const { id, ...rest } = game;
-    return rest;
+    const savedGame = await this.gamesRepository.save(game);
+
+    return plainToInstance(ResponseGameDto, savedGame);
   }
 
   findAll() {

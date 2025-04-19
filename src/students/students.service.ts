@@ -5,9 +5,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { plainToInstance } from 'class-transformer';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { Repository } from 'typeorm';
+import { StudentsResponse } from '../constants/interfaces/students-response.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { ResponseStudentDto } from './dto/response-student.dto';
 import { Student } from './entities/student.entity';
 
 @Injectable()
@@ -47,10 +50,10 @@ export class StudentsService {
       tutor,
     });
 
-    const { id, password, ...rest } = student;
-    const { id: idTutor } = tutor;
     await this.studentsRepository.save(student);
-    return { ...rest, tutor: idTutor };
+    const responseSavedStudent = plainToInstance(ResponseStudentDto, student);
+
+    return responseSavedStudent;
   }
 
   async findOneByUsername(username: string) {
@@ -83,7 +86,7 @@ export class StudentsService {
     const students = await this.studentsRepository.find({
       relations: ['tutor'],
     });
-    const studentsResponse = [];
+    const studentsResponse: StudentsResponse[] = [];
     students.map((student) => {
       const { lastname, firstname, username, tutor } = student;
       const { id } = tutor;
@@ -110,7 +113,7 @@ export class StudentsService {
     const students = await this.studentsRepository.find({
       where: { tutor: tutor },
     });
-    const studentsResponse = [];
+    const studentsResponse: StudentsResponse[] = [];
     students.map((student) => {
       const { id, lastname, firstname, username } = student;
       studentsResponse.push({

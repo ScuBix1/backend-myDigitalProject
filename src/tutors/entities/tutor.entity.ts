@@ -17,7 +17,7 @@ import {
 export class Tutor {
   @ApiProperty({ type: Number, example: 1, description: 'ID du tuteur' })
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @ApiProperty({
     type: String,
@@ -25,7 +25,7 @@ export class Tutor {
     description: 'Email du tuteur',
   })
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @ApiProperty({
     type: String,
@@ -35,7 +35,7 @@ export class Tutor {
   })
   @Column()
   @Exclude()
-  password: string;
+  password!: string;
 
   @ApiProperty({
     type: Date,
@@ -43,7 +43,7 @@ export class Tutor {
     description: 'Date de naissance du tuteur',
   })
   @Column()
-  dob: Date;
+  dob!: Date;
 
   @ApiProperty({
     type: String,
@@ -51,7 +51,7 @@ export class Tutor {
     description: 'Nom du tuteur',
   })
   @Column()
-  lastname: string;
+  lastname!: string;
 
   @ApiProperty({
     type: String,
@@ -59,21 +59,21 @@ export class Tutor {
     description: 'Prénom du tuteur',
   })
   @Column()
-  firstname: string;
+  firstname!: string;
 
   @ApiProperty({
     type: String,
     example: 'cus_N1aB2C3D4E5F6G',
     description: 'ID du client stripe associé au tuteur',
   })
-  @Column({ nullable: true })
-  customer_id: string;
+  @Column('varchar', { nullable: true })
+  customer_id!: string | null;
 
   @Column({ default: 'inactif' })
-  account_status: 'actif' | 'inactif';
+  account_status!: 'actif' | 'inactif';
 
   @Column({ nullable: true })
-  email_verified_at: Date;
+  email_verified_at?: Date;
 
   @ApiProperty({
     type: Number,
@@ -82,18 +82,18 @@ export class Tutor {
   })
   @ManyToOne(() => Admin, (admin) => admin.tutors)
   @JoinColumn({ name: 'admin_id' })
-  admin: Admin;
+  admin!: Admin;
 
   @OneToMany(() => TutorSubscription, (ts) => ts.tutor)
-  tutorSubscriptions: TutorSubscription[];
+  tutorSubscriptions?: TutorSubscription[];
 
   @OneToMany(() => Student, (student) => student.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'student_id' })
-  students: Student[];
+  students?: Student[];
 
   @OneToMany(() => Verification, (verification) => verification.id, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'verification_id' })
-  verifications: Verification[];
+  verifications?: Verification[];
 }

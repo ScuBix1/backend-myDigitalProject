@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { NO_ACCOUNT_GUARD_KEY } from '../decorators/no-account-guard.decorator';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
@@ -24,21 +25,19 @@ export class AccountGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    if (isPublic || noAccountGuard) {
-      return true;
-    }
+    if (isPublic || noAccountGuard) return true;
 
-    const request = context.switchToHttp().getRequest();
-    const tutor: Tutor = request.tutor;
+    const request = context.switchToHttp().getRequest<Request>();
+    const tutor = request.body as Tutor;
 
-    if (!tutor.email_verified_at) {
-      throw new UnauthorizedException(`Ce compte n'est pas vérifié`);
+    if (!tutor?.email_verified_at) {
+      throw new UnauthorizedException("Ce compte n'est pas vérifié");
     }
 
     if (tutor.account_status !== 'actif') {
       throw new UnauthorizedException(`Compte ${tutor.account_status}`);
     }
 
-    return tutor.account_status === 'actif' && !!tutor.email_verified_at;
+    return true;
   }
 }

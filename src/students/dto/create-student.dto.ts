@@ -15,12 +15,12 @@ export class CreateStudentDto {
   @ApiProperty({ example: 'Doe', description: "Nom de l'étudiant" })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsString({ message: i18nValidationMessage('validation.isString') })
-  lastname: string;
+  lastname!: string;
 
   @ApiProperty({ example: 'John', description: "Prénom de l'étudiant" })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsString({ message: i18nValidationMessage('validation.isString') })
-  firstname: string;
+  firstname!: string;
 
   @ApiProperty({
     example: 'johndoe123',
@@ -28,7 +28,7 @@ export class CreateStudentDto {
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsString({ message: i18nValidationMessage('validation.isString') })
-  username: string;
+  username!: string;
 
   @ApiProperty({
     example: 'Mypassword123!',
@@ -36,7 +36,7 @@ export class CreateStudentDto {
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsString({ message: i18nValidationMessage('validation.isString') })
-  password: string;
+  password!: string;
 
   @ApiProperty({
     example: '2025-03-11T08:00:00.000Z',
@@ -46,26 +46,26 @@ export class CreateStudentDto {
     {},
     { message: i18nValidationMessage('validation.isDateString') },
   )
-  @IsOptional(null)
-  start_hour: string;
+  @IsOptional()
+  start_hour?: string;
 
   @ApiProperty({ example: 60, description: 'Durée de la session en minutes' })
   @IsNumber({}, { message: i18nValidationMessage('validation.isNumber') })
-  @IsOptional(null)
-  duration: number;
+  @IsOptional()
+  duration?: number;
 
   @ApiProperty({ example: 1, description: "ID du tuteur associé à l'étudiant" })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsInt({ message: i18nValidationMessage('validation.isInt') })
-  tutor_id: number;
+  tutor_id!: number;
 
   @ApiProperty({
     example: 'cm1',
-    description: 'Niveau de classe de l\’élève',
+    description: 'Niveau de classe de l’élève',
     enumName: 'Grades',
     enum: Grades,
   })
   @IsEnum(Grades, { message: i18nValidationMessage('validation.isEnum') })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-  grade: Grades;
+  grade!: Grades;
 }

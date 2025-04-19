@@ -6,5 +6,5 @@ import { CreateSessionDto } from './create-session.dto';
 export class UpdateSessionDto extends PartialType(CreateSessionDto) {
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsNumber({}, { message: i18nValidationMessage('validation.isNumber') })
-  score: number;
+  score!: number;
 }

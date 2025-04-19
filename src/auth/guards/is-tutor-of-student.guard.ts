@@ -5,6 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Request } from 'express';
+import { JwtPayload } from 'src/constants/interfaces/jwt-payload.interface';
 import { Student } from 'src/students/entities/student.entity';
 import { Repository } from 'typeorm';
 
@@ -16,8 +18,8 @@ export class IsTutorOfStudentGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const request: Request = context.switchToHttp().getRequest();
+    const user = request.body as JwtPayload;
     const studentId = parseInt(request.params.id);
 
     if (!user || user.role !== 'tutor') return false;
@@ -26,7 +28,7 @@ export class IsTutorOfStudentGuard implements CanActivate {
     const student = await this.studentsRepository.findOne({
       where: { id: studentId },
     });
-    if (!student || !student.tutor || student.tutor.id !== user.id) {
+    if (!student || !student.tutor || student.tutor.id !== +user.id) {
       throw new NotFoundException("Vous n'avez pas accès à cet élève");
     }
 

@@ -31,7 +31,7 @@ import { VerificationModule } from './verification/verification.module';
     ScheduleModule.forRoot(),
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
-        fallbackLanguage: configService.get('FALLBACK_LANG'),
+        fallbackLanguage: configService.get('FALLBACK_LANG') ?? 'fr',
         loaderOptions: {
           path: path.join(__dirname, '/i18n/'),
           watch: true,
@@ -43,25 +43,33 @@ import { VerificationModule } from './verification/verification.module';
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get('DB_HOST'),
-        port: +configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_NAME'),
-        entities: [
-          Admin,
-          Tutor,
-          Student,
-          Game,
-          Session,
-          Subscription,
-          Verification,
-          TutorSubscription,
-        ],
-        synchronize: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        console.log('DB_HOST:', configService.get('DB_HOST'));
+        console.log('DB_PORT:', configService.get('DB_PORT'));
+        console.log('DB_USERNAME:', configService.get('DB_USERNAME'));
+        console.log('DB_PASSWORD:', configService.get('DB_PASSWORD'));
+        console.log('DB_NAME:', configService.get('DB_NAME'));
+        return {
+          type: 'mysql',
+          host: configService.get('DB_HOST'),
+          port: +configService.get('DB_PORT'),
+          username: configService.get('DB_USERNAME'),
+          password: configService.get('DB_PASSWORD'),
+          database: configService.get('DB_NAME'),
+          entities: [
+            Admin,
+            Tutor,
+            Student,
+            Game,
+            Session,
+            Subscription,
+            Verification,
+            TutorSubscription,
+          ],
+          synchronize: false,
+          migrations: ['src/migrations/*.ts'],
+        };
+      },
       inject: [ConfigService],
     }),
     AuthModule,

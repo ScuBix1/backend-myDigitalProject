@@ -21,7 +21,7 @@ export class CreateTutorDto {
   })
   @IsEmail({}, { message: i18nValidationMessage('validation.isEmail') })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-  email: string;
+  email!: string;
 
   @ApiProperty({
     example: 'Azertyuiop123456789!',
@@ -40,7 +40,7 @@ export class CreateTutorDto {
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, {
     message: i18nValidationMessage('validation.matches'),
   })
-  password: string;
+  password!: string;
 
   @ApiProperty({
     example: '2001/02/17',
@@ -50,7 +50,7 @@ export class CreateTutorDto {
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsDateString({}, { message: i18nValidationMessage('validation.isDate') })
-  dob: Date;
+  dob!: Date;
 
   @ApiProperty({
     example: 'Doe',
@@ -59,7 +59,7 @@ export class CreateTutorDto {
     required: true,
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-  lastname: string;
+  lastname!: string;
 
   @ApiProperty({
     example: 'John',
@@ -68,7 +68,7 @@ export class CreateTutorDto {
     required: true,
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-  firstname: string;
+  firstname!: string;
 
   @ApiProperty({
     example: '1',
@@ -77,13 +77,13 @@ export class CreateTutorDto {
     required: true,
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-  admin_id: number;
+  admin_id!: number;
 
-  customer_id: string;
+  customer_id!: string | null;
 
-  subscriptions: Subscription[];
+  subscriptions?: Subscription[];
 
-  students: Student[];
+  students?: Student[];
 
-  created_at: Date;
+  created_at!: Date;
 }

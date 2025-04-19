@@ -31,7 +31,7 @@ export class StripeService {
 
     private configService: ConfigService,
   ) {
-    this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY'));
+    this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY') ?? '');
   }
 
   async createCustomer(tutor: Tutor): Promise<string> {
@@ -63,7 +63,7 @@ export class StripeService {
 
   async createCheckoutSession(
     createCheckoutSessionDto: CreateCheckoutSessionDto,
-  ): Promise<string> {
+  ): Promise<string | null> {
     const { customer_id, price_id } = createCheckoutSessionDto;
     const session = await this.stripe.checkout.sessions.create({
       customer: customer_id,
@@ -108,11 +108,11 @@ export class StripeService {
       event = this.stripe.webhooks.constructEvent(
         req,
         signature,
-        endpointSecret,
+        endpointSecret ?? '',
       );
 
       if (event.type === 'checkout.session.completed') {
-        const session = event.data.object as Stripe.Checkout.Session;
+        const session = event.data.object;
         if (session.payment_status === 'paid') {
           const customerId = session.customer as string;
           const subscriptionId = session.subscription as string;
@@ -152,8 +152,8 @@ export class StripeService {
       }
 
       return event;
-    } catch (err) {
-      throw new BadRequestException(`La vérification a échoué: ${err.message}`);
+    } catch {
+      throw new BadRequestException(`La vérification a échoué`);
     }
   }
 

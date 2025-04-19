@@ -9,7 +9,7 @@ export class CreateSessionDto {
   @IsInt({ message: i18nValidationMessage('validation.isInt') })
   @Min(0, { message: i18nValidationMessage('validation.min', { min: 0 }) })
   @Max(100, { message: i18nValidationMessage('validation.max', { max: 100 }) })
-  score: number;
+  score!: number;
 
   @ApiProperty({
     example: 1,
@@ -17,7 +17,7 @@ export class CreateSessionDto {
   })
   @IsInt({ message: i18nValidationMessage('validation.isInt') })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-  student_id: number;
+  student_id!: number;
 
   @ApiProperty({
     example: 2,
@@ -25,5 +25,5 @@ export class CreateSessionDto {
   })
   @IsInt({ message: i18nValidationMessage('validation.isInt') })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-  game_id: number;
+  game_id!: number;
 }

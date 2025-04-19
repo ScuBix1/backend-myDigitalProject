@@ -5,6 +5,16 @@
       "post": {
         "operationId": "AuthController_adminLogin",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -19,6 +29,16 @@
       "post": {
         "operationId": "AuthController_tutorLogin",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -33,6 +53,16 @@
       "post": {
         "operationId": "AuthController_studentLogin",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginStudentDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -207,7 +237,7 @@
       }
     },
     "/tutors/verify/{otp}": {
-      "post": {
+      "patch": {
         "operationId": "TutorsController_verifyEmail",
         "parameters": [
           {
@@ -230,7 +260,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": ""
           }
         },
@@ -689,6 +719,14 @@
   "servers": [],
   "components": {
     "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "LoginStudentDto": {
+        "type": "object",
+        "properties": {}
+      },
       "ForgotPasswordDto": {
         "type": "object",
         "properties": {}

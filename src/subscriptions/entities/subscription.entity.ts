@@ -5,21 +5,21 @@ import { TutorSubscription } from './tutorSubscription.entity';
 @Entity()
 export class Subscription {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  price: number;
+  price!: number;
 
   @Column()
-  stripe_price_id: string;
+  stripe_price_id!: string;
 
   @Column({
     type: 'enum',
     enum: SubscriptionType,
     default: SubscriptionType.TRY,
   })
-  type: SubscriptionType;
+  type!: SubscriptionType;
 
   @OneToMany(() => TutorSubscription, (ts) => ts.subscription)
-  tutorSubscriptions: TutorSubscription[];
+  tutorSubscriptions?: TutorSubscription[];
 }

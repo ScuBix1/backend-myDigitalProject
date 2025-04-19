@@ -11,7 +11,7 @@ export class CreateGameDto {
   })
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @ApiProperty({
     example: 85,
@@ -20,7 +20,7 @@ export class CreateGameDto {
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsInt({ message: i18nValidationMessage('validation.isInt') })
-  score: number;
+  score!: number;
 
   @ApiProperty({
     example: '/src/jeu/nom',
@@ -29,15 +29,15 @@ export class CreateGameDto {
   })
   @IsString()
   @IsNotEmpty()
-  path: string;
+  path!: string;
 
   @ApiProperty({
     example: 'cm1',
-    description: 'Niveau de classe de l\’élève',
+    description: 'Niveau de classe de l’élève',
     enumName: 'Grades',
     enum: Grades,
   })
   @IsEnum(Grades)
   @IsNotEmpty()
-  grade: Grades;
+  grade!: Grades;
 }

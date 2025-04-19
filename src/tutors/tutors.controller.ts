@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Param,
+  Patch,
   Post,
   UseGuards,
   UseInterceptors,
@@ -45,7 +46,7 @@ export class TutorsController {
     return { status: 'succès', message: "Le mail est en cours d'envoie" };
   }
 
-  @Post('verify/:otp')
+  @Patch('verify/:otp')
   async verifyEmail(@Param('otp') otp: string, @Body() data: VerifyEmailDto) {
     const result = await this.tutorsService.verifyEmail(data.email, otp);
 

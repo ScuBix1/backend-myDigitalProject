@@ -11,18 +11,18 @@ import {
 @Entity()
 export class Verification {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @ManyToOne(() => Tutor, (tutor) => tutor.id)
   @JoinColumn({ name: 'tutor_id' })
-  tutor: Tutor;
+  tutor!: Tutor;
 
   @Column()
-  token: string;
+  token!: string;
 
   @Column()
-  expires_at: Date;
+  expires_at!: Date;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 }

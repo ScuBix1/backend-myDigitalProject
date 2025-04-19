@@ -12,8 +12,12 @@ export class MessageService {
       host: this.configService.get('MAIL_HOST'),
       port: Number(this.configService.get('MAIL_PORT')),
       secure: false,
-      tsl: {
+      tls: {
         rejectUnauthorized: false,
+      },
+      auth: {
+        user: this.configService.get('MAIL_USER'),
+        pass: this.configService.get('MAIL_PASS'),
       },
     });
   }
@@ -23,8 +27,8 @@ export class MessageService {
 
     const mailOptions: SendMailOptions = {
       from: sender ?? {
-        name: this.configService.get('MAIL_SENDER_NAME_DEFAULT'),
-        address: this.configService.get('MAIL_SENDER_DEFAULT'),
+        name: this.configService.get('MAIL_SENDER_NAME_DEFAULT') ?? '',
+        address: this.configService.get('MAIL_SENDER_DEFAULT') ?? '',
       },
       to: recipients,
       subject,
@@ -36,7 +40,7 @@ export class MessageService {
       await this.mailTransport.sendMail(mailOptions);
 
       return { success: true };
-    } catch (error) {
+    } catch {
       return null;
     }
   }
