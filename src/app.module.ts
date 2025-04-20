@@ -29,11 +29,12 @@ import { VerificationModule } from './verification/verification.module';
       isGlobal: true,
     }),
     ScheduleModule.forRoot(),
+
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         fallbackLanguage: configService.get('FALLBACK_LANG') ?? 'fr',
         loaderOptions: {
-          path: path.join(__dirname, '/i18n/'),
+          path: path.join(__dirname, '../i18n/'),
           watch: true,
         },
       }),
@@ -44,11 +45,6 @@ import { VerificationModule } from './verification/verification.module';
     }),
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
-        console.log('DB_HOST:', configService.get('DB_HOST'));
-        console.log('DB_PORT:', configService.get('DB_PORT'));
-        console.log('DB_USERNAME:', configService.get('DB_USERNAME'));
-        console.log('DB_PASSWORD:', configService.get('DB_PASSWORD'));
-        console.log('DB_NAME:', configService.get('DB_NAME'));
         return {
           type: 'mysql',
           host: configService.get('DB_HOST'),
