@@ -1,5 +1,4 @@
 import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
-import { TutorsService } from 'src/tutors/tutors.service';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginStudentDto } from './dto/login-student.dto';
@@ -8,10 +7,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private tutorsService: TutorsService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('admin-login')
   async adminLogin(@Body() body: LoginDto) {

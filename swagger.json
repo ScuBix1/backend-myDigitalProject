@@ -236,19 +236,10 @@
         ]
       }
     },
-    "/tutors/verify/{otp}": {
+    "/tutors/verify": {
       "patch": {
         "operationId": "TutorsController_verifyEmail",
-        "parameters": [
-          {
-            "name": "otp",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -259,6 +250,20 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tutors"
+        ]
+      }
+    },
+    "/tutors/test": {
+      "get": {
+        "operationId": "TutorsController_fetchAllTutors",
+        "parameters": [],
         "responses": {
           "200": {
             "description": ""

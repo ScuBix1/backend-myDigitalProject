@@ -4,16 +4,15 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { plainToInstance } from 'class-transformer';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { MessageService } from 'src/message/message.service';
 import { VerificationService } from 'src/verification/verification.service';
 import { Repository } from 'typeorm';
 import { StripeService } from '../stripe/stripe.service';
 import { CreateTutorDto } from './dto/create-tutor.dto';
-import { ResponseTutorDto } from './dto/response-tutor.dto';
 import { Tutor } from './entities/tutor.entity';
 
 @Injectable()
@@ -28,6 +27,7 @@ export class TutorsService {
     private verificationTokenService: VerificationService,
     private MessageService: MessageService,
     private stripeService: StripeService,
+    private jwtService: JwtService,
   ) {}
 
   async findOneByEmail(email: string) {
@@ -66,9 +66,9 @@ export class TutorsService {
 
       const savedTutor = await this.tutorsRepository.save(tutor);
 
-      const responseSavedTutor = plainToInstance(ResponseTutorDto, savedTutor);
+      const { lastname, firstname, email, dob } = savedTutor;
 
-      return responseSavedTutor;
+      return { lastname, firstname, email, dob };
     } catch {
       throw new UnauthorizedException('Un tuteur avec cet email existe déjà');
     }
@@ -97,17 +97,23 @@ export class TutorsService {
     });
   }
 
-  async verifyEmail(email: string, token: string) {
+  async verifyEmail(token: string) {
     const invalidMessage = 'OTP invalide ou expiré';
 
-    const tutor = await this.tutorsRepository.findOneBy({ email });
+    const tutorId = await this.verificationTokenService.getTutorIdByOtp(token);
+
+    if (!tutorId) {
+      throw new UnprocessableEntityException(invalidMessage);
+    }
+
+    const tutor = await this.tutorsRepository.findOneBy({ id: tutorId });
 
     if (!tutor) {
       throw new UnprocessableEntityException("Le tuteur n'existe pas !");
     }
 
     if (tutor.email_verified_at) {
-      throw new UnprocessableEntityException('Compte déjà verifié');
+      throw new UnprocessableEntityException('Compte déjà vérifié');
     }
 
     const isValid = await this.verificationTokenService.validateOtp(
@@ -118,6 +124,7 @@ export class TutorsService {
     if (!isValid) {
       throw new UnprocessableEntityException(invalidMessage);
     }
+
     const customerId = await this.stripeService.createCustomer(tutor);
 
     tutor.customer_id = customerId;
@@ -126,6 +133,17 @@ export class TutorsService {
 
     await this.tutorsRepository.save(tutor);
 
-    return true;
+    const payload = {
+      id: tutor.id,
+      username: tutor.email,
+      role: 'tutor',
+    };
+
+    const jwt = this.jwtService.sign(payload);
+
+    return {
+      email: tutor.email,
+      access_token: jwt,
+    };
   }
 }
