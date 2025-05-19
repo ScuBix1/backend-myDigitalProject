@@ -1,5 +1,5 @@
-import { SubscriptionType } from 'src/constants/enums/subscriptions.enum';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { SubscriptionType } from '../../constants/enums/subscriptions.enum';
 import { TutorSubscription } from './tutorSubscription.entity';
 
 @Entity()
@@ -20,6 +20,8 @@ export class Subscription {
   })
   type!: SubscriptionType;
 
-  @OneToMany(() => TutorSubscription, (ts) => ts.subscription)
+  @OneToMany(() => TutorSubscription, (ts) => ts.subscription, {
+    cascade: true,
+  })
   tutorSubscriptions?: TutorSubscription[];
 }

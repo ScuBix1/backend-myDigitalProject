@@ -1,9 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { Admin } from 'src/admins/entities/admin.entity';
-import { Student } from 'src/students/entities/student.entity';
-import { TutorSubscription } from 'src/subscriptions/entities/tutorSubscription.entity';
-import { Verification } from 'src/verification/entities/verification.entity';
 import {
   Column,
   Entity,
@@ -12,6 +8,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Admin } from '../../admins/entities/admin.entity';
+import { Student } from '../../students/entities/student.entity';
+import { TutorSubscription } from '../../subscriptions/entities/tutorSubscription.entity';
+import { Verification } from '../../verification/entities/verification.entity';
 
 @Entity()
 export class Tutor {
@@ -75,6 +75,9 @@ export class Tutor {
   @Column({ nullable: true })
   email_verified_at?: Date;
 
+  @Column({ default: false })
+  has_used_free_session!: boolean;
+
   @ApiProperty({
     type: Number,
     example: 3,
@@ -87,13 +90,11 @@ export class Tutor {
   @OneToMany(() => TutorSubscription, (ts) => ts.tutor)
   tutorSubscriptions?: TutorSubscription[];
 
-  @OneToMany(() => Student, (student) => student.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'student_id' })
+  @OneToMany(() => Student, (student) => student.tutor, { cascade: true })
   students?: Student[];
 
-  @OneToMany(() => Verification, (verification) => verification.id, {
-    onDelete: 'CASCADE',
+  @OneToMany(() => Verification, (verification) => verification.tutor, {
+    cascade: true,
   })
-  @JoinColumn({ name: 'verification_id' })
   verifications?: Verification[];
 }

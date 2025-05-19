@@ -1,5 +1,3 @@
-import { Game } from 'src/games/entities/game.entity';
-import { Student } from 'src/students/entities/student.entity';
 import {
   Column,
   Entity,
@@ -7,6 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Game } from '../../games/entities/game.entity';
+import { Student } from '../../students/entities/student.entity';
 
 @Entity()
 export class Session {

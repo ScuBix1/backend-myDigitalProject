@@ -1,5 +1,3 @@
-import { Subscription } from 'src/subscriptions/entities/subscription.entity';
-import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
   Column,
   Entity,
@@ -7,6 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Subscription } from '../../subscriptions/entities/subscription.entity';
+import { Tutor } from '../../tutors/entities/tutor.entity';
 
 @Entity('tutor_subscription')
 export class TutorSubscription {

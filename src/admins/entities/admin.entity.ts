@@ -1,5 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
   Column,
   Entity,
@@ -7,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Tutor } from '../../tutors/entities/tutor.entity';
 
 @Entity()
 export class Admin {

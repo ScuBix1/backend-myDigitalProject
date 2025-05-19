@@ -1,6 +1,4 @@
 import { IsInt } from 'class-validator';
-import { Grades } from 'src/constants/enums/grades.enum';
-import { Session } from 'src/sessions/entities/session.entity';
 import {
   Column,
   Entity,
@@ -8,6 +6,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Grades } from '../../constants/enums/grades.enum';
+import { Session } from '../../sessions/entities/session.entity';
 
 @Entity()
 export class Game {

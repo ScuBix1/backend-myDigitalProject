@@ -186,4 +186,15 @@ export class SubscriptionsService {
       message: `L'abonnement a été supprimé avec succès`,
     };
   }
+
+  async hasActiveSubscription(tutorId: number): Promise<boolean> {
+    const activeSub = await this.tutorSubRepo.findOne({
+      where: {
+        tutor: { id: tutorId },
+        is_active: true,
+      },
+    });
+
+    return !!activeSub;
+  }
 }

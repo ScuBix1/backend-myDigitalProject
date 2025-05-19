@@ -34,7 +34,7 @@ import { VerificationModule } from './verification/verification.module';
       useFactory: (configService: ConfigService) => ({
         fallbackLanguage: configService.get('FALLBACK_LANG') ?? 'fr',
         loaderOptions: {
-          path: path.join(__dirname, '../i18n/'),
+          path: path.join(__dirname, '../src/i18n/'),
           watch: true,
         },
       }),
@@ -63,7 +63,7 @@ import { VerificationModule } from './verification/verification.module';
             TutorSubscription,
           ],
           synchronize: false,
-          migrations: ['src/migrations/*.ts'],
+          migrations: ['/src/migrations/*.ts'],
         };
       },
       inject: [ConfigService],

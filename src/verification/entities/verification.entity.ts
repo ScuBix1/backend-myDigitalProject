@@ -1,4 +1,3 @@
-import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,6 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Tutor } from '../../tutors/entities/tutor.entity';
 
 @Entity()
 export class Verification {

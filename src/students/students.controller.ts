@@ -37,7 +37,7 @@ export class StudentsController {
   @ApiBadRequestResponse({
     description: 'Les informations saisies sont invalides',
   })
-  @UseGuards(JwtAuthGuard, ActiveSubscriptionGuard)
+  @UseGuards(JwtAuthGuard)
   create(@Body() createStudentDto: CreateStudentDto) {
     return this.studentsService.create(createStudentDto);
   }
