@@ -27,10 +27,6 @@ export const AppDataSource = new DataSource({
     TutorSubscription,
     Verification,
   ],
-  migrations: [
-    process.env.NODE_ENV === 'production'
-      ? 'dist/migrations/*.js'
-      : 'src/migrations/*.ts',
-  ],
+  migrations: ['dist/migrations/*.js'],
   synchronize: false,
 });
