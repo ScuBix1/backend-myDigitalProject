@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -7,6 +7,7 @@ import { AdminsService } from 'src/admins/admins.service';
 import { MessageModule } from 'src/message/message.module';
 import { StudentsModule } from 'src/students/students.module';
 import { StudentsService } from 'src/students/students.service';
+import { SubscriptionsModule } from 'src/subscriptions/subscriptions.module';
 import { TutorsModule } from 'src/tutors/tutors.module';
 import { VerificationModule } from 'src/verification/verification.module';
 import { AuthController } from './auth.controller';
@@ -21,10 +22,11 @@ import { JwtStrategy } from './jwt.strategy';
     StudentsModule,
     VerificationModule,
     MessageModule,
+    forwardRef(() => SubscriptionsModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
           expiresIn: configService.get<string>('JWT_EXPIRATION') || '5d',
@@ -34,5 +36,6 @@ import { JwtStrategy } from './jwt.strategy';
   ],
   providers: [AuthService, JwtStrategy, AdminsService, StudentsService],
   controllers: [AuthController],
+  exports: [JwtModule],
 })
 export class AuthModule {}

@@ -132,4 +132,20 @@ export class VerificationService {
       expires_at: LessThan(new Date()),
     });
   }
+
+  async getTutorIdByOtp(token: string): Promise<number | null> {
+    const candidates = await this.tokenRepository.find({
+      where: { expires_at: MoreThan(new Date()) },
+      relations: ['tutor'],
+    });
+
+    for (const record of candidates) {
+      const isMatch = await bcrypt.compare(token, record.token);
+      if (isMatch) {
+        return record.tutor.id;
+      }
+    }
+
+    return null;
+  }
 }

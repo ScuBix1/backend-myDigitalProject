@@ -1,6 +1,4 @@
 import { IsInt } from 'class-validator';
-import { Grades } from 'src/constants/enums/grades.enum';
-import { Session } from 'src/sessions/entities/session.entity';
 import {
   Column,
   Entity,
@@ -8,30 +6,32 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Grades } from '../../constants/enums/grades.enum';
+import { Session } from '../../sessions/entities/session.entity';
 
 @Entity()
 export class Game {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column()
   @IsInt()
-  score: number;
+  score!: number;
 
   @Column()
-  path: string;
+  path!: string;
 
   @Column({
     type: 'enum',
     enum: Grades,
     default: Grades.PS,
   })
-  grade: Grades;
+  grade!: Grades;
 
   @OneToMany(() => Session, (session) => session.id)
   @JoinColumn({ name: 'session_id' })
-  sessions: Session[];
+  sessions!: Session[];
 }

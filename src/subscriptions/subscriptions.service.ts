@@ -55,7 +55,7 @@ export class SubscriptionsService {
     const tutor = await this.tutorsRepository.findOne({
       where: { id: tutorId },
     });
-    return this.tutorSubRepo.findOne({ where: { tutor: tutor } });
+    return this.tutorSubRepo.findOne({ where: { tutor: tutor ?? undefined } });
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -88,7 +88,7 @@ export class SubscriptionsService {
   ) {
     const todayDate = new Date();
     let startDate = todayDate;
-    let endDate: Date;
+    let endDate: Date = new Date();
     const tutor = await this.tutorsRepository.findOneBy({
       customer_id: customerId,
     });
@@ -157,11 +157,44 @@ export class SubscriptionsService {
     };
   }
 
-  update(id: number, updateSubscriptionDto: UpdateSubscriptionDto) {
-    return `This action updates a #${id} subscription`;
+  async update(id: number, updateSubscriptionDto: UpdateSubscriptionDto) {
+    const subscription = await this.subscriptionsRepository.find({
+      where: { id },
+    });
+
+    if (!subscription) {
+      throw new NotFoundException("La suscription n'a pas été trouvé.");
+    }
+
+    const subscriptionUpdated = { ...subscription, updateSubscriptionDto };
+
+    await this.subscriptionsRepository.save(subscriptionUpdated);
+
+    return { message: 'La modification a été pris en compte.' };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} subscription`;
+  async remove(id: number) {
+    const subscription = await this.subscriptionsRepository.findOneBy({ id });
+
+    if (!subscription) {
+      throw new NotFoundException("L'abonnement spécifié n'existe pas");
+    }
+
+    await this.subscriptionsRepository.delete(id);
+
+    return {
+      message: `L'abonnement a été supprimé avec succès`,
+    };
+  }
+
+  async hasActiveSubscription(tutorId: number): Promise<boolean> {
+    const activeSub = await this.tutorSubRepo.findOne({
+      where: {
+        tutor: { id: tutorId },
+        is_active: true,
+      },
+    });
+
+    return !!activeSub;
   }
 }

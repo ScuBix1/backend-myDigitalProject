@@ -7,9 +7,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { plainToInstance } from 'class-transformer';
 import { AdminsService } from 'src/admins/admins.service';
 import { Admin } from 'src/admins/entities/admin.entity';
+import { JwtPayloadLogin } from 'src/constants/interfaces/jwt-payload-login.interface';
 import { MessageService } from 'src/message/message.service';
+import { ResponseTutorDto } from 'src/tutors/dto/response-tutor.dto';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { TutorsService } from 'src/tutors/tutors.service';
 import { Repository } from 'typeorm';
@@ -45,16 +48,14 @@ export class AuthService {
       if (!isMatch) {
         return null;
       }
-    } catch (error) {
+    } catch {
       return null;
     }
 
-    delete tutor.password;
-
-    return tutor;
+    return plainToInstance(ResponseTutorDto, tutor);
   }
 
-  async login(user: any) {
+  login(user: JwtPayloadLogin) {
     const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
@@ -159,7 +160,7 @@ export class AuthService {
 
     await this.MessageService.sendEmail({
       subject: 'Réinitialisation du mot de passe',
-      recipients: [{ address: email }],
+      recipients: [{ name: 'admin', address: email }],
       html: `<p>Voici votre lien : <a href="${resetLink}">${resetLink}</a></p>`,
       text: 'text',
     });

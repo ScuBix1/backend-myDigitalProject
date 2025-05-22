@@ -29,11 +29,12 @@ import { VerificationModule } from './verification/verification.module';
       isGlobal: true,
     }),
     ScheduleModule.forRoot(),
+
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
-        fallbackLanguage: configService.get('FALLBACK_LANG'),
+        fallbackLanguage: configService.get('FALLBACK_LANG') ?? 'fr',
         loaderOptions: {
-          path: path.join(__dirname, '/i18n/'),
+          path: path.join(__dirname, '../src/i18n/'),
           watch: true,
         },
       }),
@@ -43,25 +44,28 @@ import { VerificationModule } from './verification/verification.module';
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get('DB_HOST'),
-        port: +configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_NAME'),
-        entities: [
-          Admin,
-          Tutor,
-          Student,
-          Game,
-          Session,
-          Subscription,
-          Verification,
-          TutorSubscription,
-        ],
-        synchronize: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        return {
+          type: 'mysql',
+          host: configService.get('DB_HOST'),
+          port: +configService.get('DB_PORT'),
+          username: configService.get('DB_USERNAME'),
+          password: configService.get('DB_PASSWORD'),
+          database: configService.get('DB_NAME'),
+          entities: [
+            Admin,
+            Tutor,
+            Student,
+            Game,
+            Session,
+            Subscription,
+            Verification,
+            TutorSubscription,
+          ],
+          synchronize: false,
+          migrations: ['/src/migrations/*.ts'],
+        };
+      },
       inject: [ConfigService],
     }),
     AuthModule,

@@ -4,9 +4,7 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -15,7 +13,6 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { ActiveSubscriptionGuard } from 'src/auth/guards/active-subscription.guard';
 import { IsTutorOfStudentGuard } from 'src/auth/guards/is-tutor-of-student.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -35,7 +32,7 @@ export class StudentsController {
   @ApiBadRequestResponse({
     description: 'Les informations saisies sont invalides',
   })
-  @UseGuards(JwtAuthGuard, ActiveSubscriptionGuard)
+  @UseGuards(JwtAuthGuard)
   create(@Body() createStudentDto: CreateStudentDto) {
     return this.studentsService.create(createStudentDto);
   }
@@ -45,15 +42,6 @@ export class StudentsController {
   @Get()
   findAll() {
     return this.studentsService.findAll();
-  }
-
-  @UseGuards(JwtAuthGuard, ActiveSubscriptionGuard)
-  @Get(':id')
-  findAllStudentsByTutor(@Req() req, @Param('id', ParseIntPipe) id: number) {
-    return this.studentsService.findAllStudentsByTutor(
-      id,
-      parseInt(req.user.id),
-    );
   }
 
   @UseGuards(JwtAuthGuard, IsTutorOfStudentGuard)

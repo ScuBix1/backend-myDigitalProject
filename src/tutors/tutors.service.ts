@@ -4,10 +4,12 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { MessageService } from 'src/message/message.service';
+import { Student } from 'src/students/entities/student.entity';
 import { VerificationService } from 'src/verification/verification.service';
 import { Repository } from 'typeorm';
 import { StripeService } from '../stripe/stripe.service';
@@ -23,9 +25,13 @@ export class TutorsService {
     @InjectRepository(Admin)
     private adminsRepository: Repository<Admin>,
 
+    @InjectRepository(Student)
+    private studentsRepository: Repository<Student>,
+
     private verificationTokenService: VerificationService,
     private MessageService: MessageService,
     private stripeService: StripeService,
+    private jwtService: JwtService,
   ) {}
 
   async findOneByEmail(email: string) {
@@ -64,16 +70,11 @@ export class TutorsService {
 
       const savedTutor = await this.tutorsRepository.save(tutor);
 
-      const { password: tutorPassword, ...tutorWithoutPassword } = savedTutor;
+      const { lastname, firstname, email, dob } = savedTutor;
 
-      const { password: adminPassword, ...adminWithoutPassword } =
-        savedTutor.admin;
-
-      return { ...tutorWithoutPassword, ...adminWithoutPassword };
-    } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
-        throw new UnauthorizedException('Un tuteur avec cet email existe déjà');
-      }
+      return { lastname, firstname, email, dob };
+    } catch {
+      throw new UnauthorizedException('Un tuteur avec cet email existe déjà');
     }
   }
 
@@ -88,7 +89,7 @@ export class TutorsService {
       throw new UnprocessableEntityException('Compte déjà vérifié');
     }
 
-    const otp = await this.verificationTokenService.generateOtp(tutor.id);
+    const otp = await this.verificationTokenService.generateOtp(tutor.id ?? 0);
 
     await this.MessageService.sendEmail({
       subject: 'Math&Magique - Vérification du compte',
@@ -100,17 +101,23 @@ export class TutorsService {
     });
   }
 
-  async verifyEmail(email: string, token: string) {
+  async verifyEmail(token: string) {
     const invalidMessage = 'OTP invalide ou expiré';
 
-    const tutor = await this.tutorsRepository.findOneBy({ email });
+    const tutorId = await this.verificationTokenService.getTutorIdByOtp(token);
+
+    if (!tutorId) {
+      throw new UnprocessableEntityException(invalidMessage);
+    }
+
+    const tutor = await this.tutorsRepository.findOneBy({ id: tutorId });
 
     if (!tutor) {
       throw new UnprocessableEntityException("Le tuteur n'existe pas !");
     }
 
     if (tutor.email_verified_at) {
-      throw new UnprocessableEntityException('Compte déjà verifié');
+      throw new UnprocessableEntityException('Compte déjà vérifié');
     }
 
     const isValid = await this.verificationTokenService.validateOtp(
@@ -121,6 +128,7 @@ export class TutorsService {
     if (!isValid) {
       throw new UnprocessableEntityException(invalidMessage);
     }
+
     const customerId = await this.stripeService.createCustomer(tutor);
 
     tutor.customer_id = customerId;
@@ -129,6 +137,41 @@ export class TutorsService {
 
     await this.tutorsRepository.save(tutor);
 
-    return true;
+    const payload = {
+      id: tutor.id,
+      username: tutor.email,
+      role: 'tutor',
+    };
+
+    const jwt = this.jwtService.sign(payload);
+
+    return {
+      email: tutor.email,
+      access_token: jwt,
+    };
+  }
+
+  async findAllStudentsByTutor(tutor_id: number, jwtTutorId: string) {
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: tutor_id },
+    });
+
+    if (!tutor) {
+      throw new NotFoundException("Le tuteur spécifié n'existe pas");
+    }
+
+    if (tutor.id !== parseInt(jwtTutorId)) {
+      throw new NotFoundException("Ce n'est pas votre ID");
+    }
+
+    const students = await this.studentsRepository.find({
+      where: { tutor: tutor },
+    });
+
+    const studentsResponse = students.map((student) => {
+      return student;
+    });
+
+    return studentsResponse;
   }
 }

@@ -1,6 +1,3 @@
-import { Grades } from 'src/constants/enums/grades.enum';
-import { Session } from 'src/sessions/entities/session.entity';
-import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
   Column,
   Entity,
@@ -9,49 +6,51 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Grades } from '../../constants/enums/grades.enum';
+import { Session } from '../../sessions/entities/session.entity';
+import { Tutor } from '../../tutors/entities/tutor.entity';
 
 @Entity()
 export class Student {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  lastname: string;
+  lastname!: string;
 
   @Column()
-  firstname: string;
+  firstname!: string;
 
   @Column({
     unique: true,
     nullable: false,
   })
-  username: string;
+  username!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column({
     type: 'timestamp',
     nullable: true,
     default: () => 'CURRENT_TIMESTAMP',
   })
-  start_hour: Date;
+  start_hour?: Date;
 
   @Column({ type: 'int', nullable: true })
-  duration: number;
+  duration?: number;
 
-  @ManyToOne(() => Tutor, (tutor) => tutor.students)
+  @ManyToOne(() => Tutor, (tutor) => tutor.students, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'tutor_id' })
-  tutor: Tutor;
+  tutor!: Tutor;
 
   @Column({
     type: 'enum',
     enum: Grades,
     default: Grades.PS,
   })
-  grade: Grades;
+  grade!: Grades;
 
-  @OneToMany(() => Session, (session) => session.id)
-  @JoinColumn({ name: 'session_id' })
-  sessions: Session[];
+  @OneToMany(() => Session, (session) => session.student, { cascade: true })
+  sessions?: Session[];
 }

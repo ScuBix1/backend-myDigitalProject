@@ -1,29 +1,27 @@
 import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
-import { TutorsService } from 'src/tutors/tutors.service';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { LoginStudentDto } from './dto/login-student.dto';
+import { LoginDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private tutorsService: TutorsService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('admin-login')
-  async adminLogin(@Body() body) {
+  async adminLogin(@Body() body: LoginDto) {
     return this.authService.adminLogin(body.email, body.password);
   }
 
   @Post('tutor-login')
-  async tutorLogin(@Body() body) {
+  async tutorLogin(@Body() body: LoginDto) {
     return this.authService.tutorLogin(body.email, body.password);
   }
 
   @Post('student-login')
-  async studentLogin(@Body() body) {
-    return this.authService.studentLogin(body.email, body.password);
+  async studentLogin(@Body() body: LoginStudentDto) {
+    return this.authService.studentLogin(body.username, body.password);
   }
 
   @Post('forgot-password')

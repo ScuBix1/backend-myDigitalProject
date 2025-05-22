@@ -1,5 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { Tutor } from 'src/tutors/entities/tutor.entity';
 import {
   Column,
   Entity,
@@ -7,29 +6,30 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Tutor } from '../../tutors/entities/tutor.entity';
 
 @Entity()
 export class Admin {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
   @Exclude()
-  password: string;
+  password!: string;
 
   @Column()
-  manage_tutors: boolean;
+  manage_tutors!: boolean;
 
   @Column()
-  manage_subscriptions: boolean;
+  manage_subscriptions!: boolean;
 
   @Column()
-  manage_games: boolean;
+  manage_games!: boolean;
 
   @OneToMany(() => Tutor, (tutor) => tutor.id)
   @JoinColumn({ name: 'tutor_id' })
-  tutors: Tutor[];
+  tutors!: Tutor[];
 }

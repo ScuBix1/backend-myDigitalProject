@@ -5,8 +5,8 @@ export class LoginDto {
   @IsEmail({}, { message: i18nValidationMessage('validation.isEmail') })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
-  password: string;
+  password!: string;
 }

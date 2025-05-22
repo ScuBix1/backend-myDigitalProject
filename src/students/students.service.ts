@@ -1,13 +1,20 @@
 import {
   BadRequestException,
+  ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { plainToInstance } from 'class-transformer';
+import { SubscriptionsService } from 'src/subscriptions/subscriptions.service';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { Repository } from 'typeorm';
+import { StudentsResponse } from '../constants/interfaces/students-response.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { ResponseStudentDto } from './dto/response-student.dto';
 import { Student } from './entities/student.entity';
 
 @Injectable()
@@ -17,13 +24,15 @@ export class StudentsService {
     private studentsRepository: Repository<Student>,
     @InjectRepository(Tutor)
     private tutorsRepository: Repository<Tutor>,
+    @Inject(forwardRef(() => SubscriptionsService))
+    private subscriptionService: SubscriptionsService,
   ) {}
 
   async create(createStudentDto: CreateStudentDto) {
     const { tutor_id, username } = createStudentDto;
 
     const existingStudent = await this.studentsRepository.findOne({
-      where: { username: username },
+      where: { username: username, tutor: { id: tutor_id } },
     });
 
     if (existingStudent) {
@@ -34,10 +43,16 @@ export class StudentsService {
 
     const tutor = await this.tutorsRepository.findOne({
       where: { id: tutor_id },
+      relations: ['students', 'tutorSubscriptions'],
     });
+
     if (!tutor) {
       throw new BadRequestException("Le tuteur spécifié n'existe pas");
     }
+
+    const hasAlreadyUsedFreeSession = tutor.has_used_free_session;
+    const hasSubscription =
+      await this.subscriptionService.hasActiveSubscription(tutor_id);
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(createStudentDto.password, salt);
@@ -47,10 +62,26 @@ export class StudentsService {
       tutor,
     });
 
-    const { id, password, ...rest } = student;
-    const { id: idTutor } = tutor;
+    if (
+      !hasSubscription &&
+      tutor.students?.length &&
+      tutor.students.length >= 1 &&
+      hasAlreadyUsedFreeSession
+    ) {
+      throw new ForbiddenException(
+        'Vous avez déjà créé un élève avec la version gratuite.',
+      );
+    }
+
+    if (!hasSubscription && !hasAlreadyUsedFreeSession) {
+      tutor.has_used_free_session = true;
+      await this.tutorsRepository.save(tutor);
+    }
+
     await this.studentsRepository.save(student);
-    return { ...rest, tutor: idTutor };
+    const responseSavedStudent = plainToInstance(ResponseStudentDto, student);
+
+    return responseSavedStudent;
   }
 
   async findOneByUsername(username: string) {
@@ -83,7 +114,7 @@ export class StudentsService {
     const students = await this.studentsRepository.find({
       relations: ['tutor'],
     });
-    const studentsResponse = [];
+    const studentsResponse: StudentsResponse[] = [];
     students.map((student) => {
       const { lastname, firstname, username, tutor } = student;
       const { id } = tutor;
@@ -92,32 +123,6 @@ export class StudentsService {
         firstname,
         username,
         tutor: id,
-      });
-    });
-    return studentsResponse;
-  }
-
-  async findAllStudentsByTutor(tutor_id: number, jwtTutorId: number) {
-    const tutor = await this.tutorsRepository.findOne({
-      where: { id: tutor_id },
-    });
-    if (!tutor) {
-      throw new NotFoundException("Le tuteur spécifié n'existe pas");
-    }
-    if (tutor.id !== jwtTutorId) {
-      throw new NotFoundException("Ce n'est pas votre ID");
-    }
-    const students = await this.studentsRepository.find({
-      where: { tutor: tutor },
-    });
-    const studentsResponse = [];
-    students.map((student) => {
-      const { id, lastname, firstname, username } = student;
-      studentsResponse.push({
-        id,
-        lastname,
-        firstname,
-        username,
       });
     });
     return studentsResponse;

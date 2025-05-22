@@ -17,7 +17,7 @@ export class CreateAdminDto {
   })
   @IsBoolean()
   @IsNotEmpty()
-  manage_tutors: boolean;
+  manage_tutors!: boolean;
 
   @ApiProperty({
     example: 'true',
@@ -27,7 +27,7 @@ export class CreateAdminDto {
   })
   @IsBoolean()
   @IsNotEmpty()
-  manage_subscriptions: boolean;
+  manage_subscriptions!: boolean;
 
   @ApiProperty({
     example: 'true',
@@ -37,7 +37,7 @@ export class CreateAdminDto {
   })
   @IsBoolean()
   @IsNotEmpty()
-  manage_games: boolean;
+  manage_games!: boolean;
 
   @ApiProperty({
     example: 'email@email.fr',
@@ -47,7 +47,7 @@ export class CreateAdminDto {
   })
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @ApiProperty({
     example: 'Azertyuiop123456789!',
@@ -65,5 +65,5 @@ export class CreateAdminDto {
     message:
       'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.',
   })
-  password: string;
+  password!: string;
 }

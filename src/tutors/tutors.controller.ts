@@ -2,7 +2,9 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Get,
   Param,
+  Patch,
   Post,
   UseGuards,
   UseInterceptors,
@@ -10,11 +12,14 @@ import {
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import { CurrentTutor } from 'src/auth/decorators/current-tutor.decorator';
 import { NoAccountGuard } from 'src/auth/decorators/no-account-guard.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtPayload } from 'src/constants/interfaces/jwt-payload.interface';
+import { Student } from 'src/students/entities/student.entity';
 import { CreateTutorDto } from './dto/create-tutor.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Tutor } from './entities/tutor.entity';
@@ -38,17 +43,32 @@ export class TutorsController {
   }
 
   @NoAccountGuard()
-  @UseGuards(JwtAuthGuard)
   @Post('verification-otp')
   async generateEmailVerification(@CurrentTutor() tutor: Tutor) {
     await this.tutorsService.generateEmailVerification(tutor.email);
     return { status: 'succès', message: "Le mail est en cours d'envoie" };
   }
 
-  @Post('verify/:otp')
-  async verifyEmail(@Param('otp') otp: string, @Body() data: VerifyEmailDto) {
-    const result = await this.tutorsService.verifyEmail(data.email, otp);
+  @Patch('verify')
+  async verifyEmail(@Body() data: VerifyEmailDto) {
+    const result = await this.tutorsService.verifyEmail(data.otp);
+    if (result) {
+      return result;
+    }
+    return { status: 'échec', message: 'échec de la vérification' };
+  }
 
-    return { status: result ? 'succès' : 'échec', message: null };
+  @ApiOkResponse({
+    description: 'Liste des étudiants du tuteur',
+    type: Student,
+    isArray: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get(':tutorId/students')
+  async getStudentsByTutor(
+    @Param('tutorId') tutorId: number,
+    @CurrentTutor('id') user: JwtPayload,
+  ) {
+    return this.tutorsService.findAllStudentsByTutor(tutorId, user.id);
   }
 }

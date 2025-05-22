@@ -1,25 +1,27 @@
-import { SubscriptionType } from 'src/constants/enums/subscriptions.enum';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { SubscriptionType } from '../../constants/enums/subscriptions.enum';
 import { TutorSubscription } from './tutorSubscription.entity';
 
 @Entity()
 export class Subscription {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  price: number;
+  price!: number;
 
   @Column()
-  stripe_price_id: string;
+  stripe_price_id!: string;
 
   @Column({
     type: 'enum',
     enum: SubscriptionType,
     default: SubscriptionType.TRY,
   })
-  type: SubscriptionType;
+  type!: SubscriptionType;
 
-  @OneToMany(() => TutorSubscription, (ts) => ts.subscription)
-  tutorSubscriptions: TutorSubscription[];
+  @OneToMany(() => TutorSubscription, (ts) => ts.subscription, {
+    cascade: true,
+  })
+  tutorSubscriptions?: TutorSubscription[];
 }

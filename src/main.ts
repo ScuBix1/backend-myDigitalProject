@@ -1,6 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+import 'dotenv/config';
 import * as express from 'express';
 import { writeFileSync } from 'fs';
 import * as yaml from 'js-yaml';
@@ -13,9 +15,18 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: [process.env.LOCAL_ORIGIN, process.env.REMOTE_ORIGIN],
+    credentials: true,
+  });
+
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
+
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
+      whitelist: false,
       forbidNonWhitelisted: true,
       transform: true,
       exceptionFactory: i18nValidationErrorFactory,
@@ -45,9 +56,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory);
 
   app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
 
   await app.listen(3000);
 }
-bootstrap();
+void bootstrap();

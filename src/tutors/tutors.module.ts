@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Admin } from 'src/admins/entities/admin.entity';
+import { AuthModule } from 'src/auth/auth.module';
 import { MessageService } from 'src/message/message.service';
 import { StripeService } from 'src/stripe/stripe.service';
+import { Student } from 'src/students/entities/student.entity';
 import { Subscription } from 'src/subscriptions/entities/subscription.entity';
 import { TutorSubscription } from 'src/subscriptions/entities/tutorSubscription.entity';
 import { SubscriptionsService } from 'src/subscriptions/subscriptions.service';
@@ -20,7 +22,9 @@ import { TutorsService } from './tutors.service';
       Verification,
       TutorSubscription,
       Subscription,
+      Student,
     ]),
+    forwardRef(() => AuthModule),
   ],
   controllers: [TutorsController],
   providers: [

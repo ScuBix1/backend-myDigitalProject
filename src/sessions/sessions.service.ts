@@ -1,9 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { plainToInstance } from 'class-transformer';
 import { Game } from 'src/games/entities/game.entity';
 import { Student } from 'src/students/entities/student.entity';
+import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { Repository } from 'typeorm';
 import { CreateSessionDto } from './dto/create-session.dto';
+import { ResponseSessionDto } from './dto/response-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
 import { Session } from './entities/session.entity';
 
@@ -16,6 +23,8 @@ export class SessionsService {
     private gamesRepository: Repository<Game>,
     @InjectRepository(Student)
     private studentsRepository: Repository<Student>,
+    @InjectRepository(Tutor)
+    private tutorsRepository: Repository<Tutor>,
   ) {}
 
   async create(createSessionDto: CreateSessionDto) {
@@ -48,17 +57,32 @@ export class SessionsService {
       );
     }
 
-    const session = this.sessionsRepository.create({
-      ...createSessionDto,
-      game,
-      student,
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: student.tutor.id },
+      relations: ['subscription'],
     });
 
-    await this.sessionsRepository.save(session);
-    const { id: idStudent } = student;
-    const { id: idGame } = game;
-    const { id, ...rest } = session;
-    return { ...rest, game: idGame, student: idStudent };
+    if (tutor?.tutorSubscriptions && !tutor.has_used_free_session) {
+      const session = this.sessionsRepository.create({
+        ...createSessionDto,
+        game,
+        student,
+      });
+
+      await this.sessionsRepository.save(session);
+      const { id: idStudent } = student;
+      const { id: idGame } = game;
+      const responseSavedSession = plainToInstance(ResponseSessionDto, session);
+      tutor.has_used_free_session = true;
+      await this.tutorsRepository.save(tutor);
+      return { responseSavedSession, game: idGame, student: idStudent };
+    }
+
+    if (tutor?.has_used_free_session) {
+      throw new ForbiddenException(
+        'Vous avez déjà utilisé votre partie gratuite.',
+      );
+    }
   }
 
   findAll() {

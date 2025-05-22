@@ -38,13 +38,10 @@ export class StripeController {
     @Headers('stripe-signature') signature: string,
   ) {
     try {
-      const event = await this.stripeService.handleWebhook(
-        request.body,
-        signature,
-      );
+      await this.stripeService.handleWebhook(request.body, signature);
 
       return response.status(HttpStatus.OK).send({ received: true });
-    } catch (err) {
+    } catch {
       return response.status(HttpStatus.BAD_REQUEST).send(`Webhook Error`);
     }
   }

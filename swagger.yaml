@@ -4,6 +4,12 @@ paths:
     post:
       operationId: AuthController_adminLogin
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
       responses:
         '201':
           description: ''
@@ -13,6 +19,12 @@ paths:
     post:
       operationId: AuthController_tutorLogin
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
       responses:
         '201':
           description: ''
@@ -21,6 +33,12 @@ paths:
     post:
       operationId: AuthController_studentLogin
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginStudentDto'
       responses:
         '201':
           description: ''
@@ -121,15 +139,10 @@ paths:
         '201':
           description: ''
       tags: *ref_1
-  /tutors/verify/{otp}:
-    post:
+  /tutors/verify:
+    patch:
       operationId: TutorsController_verifyEmail
-      parameters:
-        - name: otp
-          required: true
-          in: path
-          schema:
-            type: string
+      parameters: []
       requestBody:
         required: true
         content:
@@ -137,8 +150,27 @@ paths:
             schema:
               $ref: '#/components/schemas/VerifyEmailDto'
       responses:
-        '201':
+        '200':
           description: ''
+      tags: *ref_1
+  /tutors/{tutorId}/students:
+    get:
+      operationId: TutorsController_getStudentsByTutor
+      parameters:
+        - name: tutorId
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Liste des étudiants du tuteur
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
       tags: *ref_1
   /admins/sign-up:
     post:
@@ -191,18 +223,6 @@ paths:
           description: ''
       tags: *ref_2
   /students/{id}:
-    get:
-      operationId: StudentsController_findAllStudentsByTutor
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: number
-      responses:
-        '200':
-          description: ''
-      tags: *ref_2
     delete:
       operationId: StudentsController_remove
       parameters:
@@ -408,6 +428,12 @@ tags:
 servers: []
 components:
   schemas:
+    LoginDto:
+      type: object
+      properties: {}
+    LoginStudentDto:
+      type: object
+      properties: {}
     ForgotPasswordDto:
       type: object
       properties: {}
@@ -456,6 +482,9 @@ components:
         - firstname
         - admin_id
     VerifyEmailDto:
+      type: object
+      properties: {}
+    Student:
       type: object
       properties: {}
     CreateAdminDto:

@@ -7,16 +7,16 @@ export class CreateSubscriptionDto {
   @ApiProperty({ example: 19.99, description: "Prix de l'abonnement" })
   @IsNotEmpty({ message: "Le prix de l'abonnement est obligatoire" })
   @IsNumber({}, { message: "Le prix de l'abonnement doit être un nombre" })
-  price: number;
+  price!: number;
 
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsString({ message: i18nValidationMessage('validation.isString') })
-  stripe_price_id: string;
+  stripe_price_id!: string;
 
   @ApiProperty({
     example: 'monthly',
     description: "Type d'abonnement",
   })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-  type: SubscriptionType;
+  type!: SubscriptionType;
 }

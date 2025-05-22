@@ -1,4 +1,4 @@
 export class CreateStripeSubscriptionDto {
-  customer_id: string;
-  price_id: string;
+  customer_id!: string;
+  price_id!: string;
 }

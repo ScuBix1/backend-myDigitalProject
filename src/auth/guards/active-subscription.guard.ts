@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Request } from 'express';
+import { JwtPayload } from 'src/constants/interfaces/jwt-payload.interface';
 import { TutorSubscription } from 'src/subscriptions/entities/tutorSubscription.entity';
 import { Repository } from 'typeorm';
 
@@ -19,8 +21,8 @@ export class ActiveSubscriptionGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
-    const user = req.user;
+    const req = context.switchToHttp().getRequest<Request>();
+    const user = req.body as JwtPayload;
 
     if (user.role !== 'tutor' || !user || !user.id) {
       throw new ForbiddenException(
@@ -30,7 +32,7 @@ export class ActiveSubscriptionGuard implements CanActivate {
 
     const sub = await this.tutorSubRepo.findOne({
       where: {
-        tutor: { id: user.id },
+        tutor: { id: +user.id },
         is_active: true,
       },
       relations: ['tutor'],
