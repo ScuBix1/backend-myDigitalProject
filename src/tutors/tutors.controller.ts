@@ -22,7 +22,6 @@ import { JwtPayload } from 'src/constants/interfaces/jwt-payload.interface';
 import { Student } from 'src/students/entities/student.entity';
 import { CreateTutorDto } from './dto/create-tutor.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
-import { Tutor } from './entities/tutor.entity';
 import { TutorsService } from './tutors.service';
 
 @Controller('tutors')
@@ -44,9 +43,9 @@ export class TutorsController {
 
   @NoAccountGuard()
   @Post('verification-otp')
-  async generateEmailVerification(@CurrentTutor() tutor: Tutor) {
-    await this.tutorsService.generateEmailVerification(tutor.email);
-    return { status: 'succès', message: "Le mail est en cours d'envoie" };
+  async generateEmailVerification(@Body() email: string) {
+    await this.tutorsService.generateEmailVerification(email);
+    return { status: 'succès', message: "Le mail est en cours d'envoi" };
   }
 
   @Patch('verify')
