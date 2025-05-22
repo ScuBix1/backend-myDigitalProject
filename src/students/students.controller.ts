@@ -4,9 +4,7 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -14,13 +12,10 @@ import {
   ApiCreatedResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { Request } from 'express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { ActiveSubscriptionGuard } from 'src/auth/guards/active-subscription.guard';
 import { IsTutorOfStudentGuard } from 'src/auth/guards/is-tutor-of-student.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { JwtPayload } from 'src/constants/interfaces/jwt-payload.interface';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { StudentsService } from './students.service';
 
@@ -47,16 +42,6 @@ export class StudentsController {
   @Get()
   findAll() {
     return this.studentsService.findAll();
-  }
-
-  @UseGuards(JwtAuthGuard, ActiveSubscriptionGuard)
-  @Get(':id')
-  findAllStudentsByTutor(
-    @Req() req: Request,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
-    const user = req.user as JwtPayload;
-    return this.studentsService.findAllStudentsByTutor(id, +user.id);
   }
 
   @UseGuards(JwtAuthGuard, IsTutorOfStudentGuard)

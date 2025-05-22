@@ -128,32 +128,6 @@ export class StudentsService {
     return studentsResponse;
   }
 
-  async findAllStudentsByTutor(tutor_id: number, jwtTutorId: number) {
-    const tutor = await this.tutorsRepository.findOne({
-      where: { id: tutor_id },
-    });
-    if (!tutor) {
-      throw new NotFoundException("Le tuteur spécifié n'existe pas");
-    }
-    if (tutor.id !== jwtTutorId) {
-      throw new NotFoundException("Ce n'est pas votre ID");
-    }
-    const students = await this.studentsRepository.find({
-      where: { tutor: tutor },
-    });
-    const studentsResponse: StudentsResponse[] = [];
-    students.map((student) => {
-      const { id, lastname, firstname, username } = student;
-      studentsResponse.push({
-        id,
-        lastname,
-        firstname,
-        username,
-      });
-    });
-    return studentsResponse;
-  }
-
   async remove(id: number, idTutor: number) {
     const student = await this.studentsRepository.findOne({
       where: { id: id },

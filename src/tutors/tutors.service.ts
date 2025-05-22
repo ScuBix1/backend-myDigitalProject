@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { MessageService } from 'src/message/message.service';
+import { Student } from 'src/students/entities/student.entity';
 import { VerificationService } from 'src/verification/verification.service';
 import { Repository } from 'typeorm';
 import { StripeService } from '../stripe/stripe.service';
@@ -23,6 +24,9 @@ export class TutorsService {
 
     @InjectRepository(Admin)
     private adminsRepository: Repository<Admin>,
+
+    @InjectRepository(Student)
+    private studentsRepository: Repository<Student>,
 
     private verificationTokenService: VerificationService,
     private MessageService: MessageService,
@@ -145,5 +149,29 @@ export class TutorsService {
       email: tutor.email,
       access_token: jwt,
     };
+  }
+
+  async findAllStudentsByTutor(tutor_id: number, jwtTutorId: string) {
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: tutor_id },
+    });
+
+    if (!tutor) {
+      throw new NotFoundException("Le tuteur spécifié n'existe pas");
+    }
+
+    if (tutor.id !== parseInt(jwtTutorId)) {
+      throw new NotFoundException("Ce n'est pas votre ID");
+    }
+
+    const students = await this.studentsRepository.find({
+      where: { tutor: tutor },
+    });
+
+    const studentsResponse = students.map((student) => {
+      return student;
+    });
+
+    return studentsResponse;
   }
 }

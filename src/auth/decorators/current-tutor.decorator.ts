@@ -5,6 +5,6 @@ import { UserFromToken } from 'src/constants/interfaces/user-from-token.interfac
 export const CurrentTutor = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): UserFromToken => {
     const request: Request = ctx.switchToHttp().getRequest();
-    return request.body as UserFromToken;
+    return request.user as UserFromToken;
   },
 );

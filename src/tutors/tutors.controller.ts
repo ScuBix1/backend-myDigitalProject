@@ -3,17 +3,23 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import { CurrentTutor } from 'src/auth/decorators/current-tutor.decorator';
 import { NoAccountGuard } from 'src/auth/decorators/no-account-guard.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtPayload } from 'src/constants/interfaces/jwt-payload.interface';
+import { Student } from 'src/students/entities/student.entity';
 import { CreateTutorDto } from './dto/create-tutor.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Tutor } from './entities/tutor.entity';
@@ -52,8 +58,17 @@ export class TutorsController {
     return { status: 'échec', message: 'échec de la vérification' };
   }
 
-  @Get('/test')
-  fetchAllTutors() {
-    return this.tutorsService.findOneByEmail('bastian.monnin1@gmail.com');
+  @ApiOkResponse({
+    description: 'Liste des étudiants du tuteur',
+    type: Student,
+    isArray: true,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get(':tutorId/students')
+  async getStudentsByTutor(
+    @Param('tutorId') tutorId: number,
+    @CurrentTutor('id') user: JwtPayload,
+  ) {
+    return this.tutorsService.findAllStudentsByTutor(tutorId, user.id);
   }
 }

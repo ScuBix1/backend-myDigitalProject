@@ -153,13 +153,24 @@ paths:
         '200':
           description: ''
       tags: *ref_1
-  /tutors/test:
+  /tutors/{tutorId}/students:
     get:
-      operationId: TutorsController_fetchAllTutors
-      parameters: []
+      operationId: TutorsController_getStudentsByTutor
+      parameters:
+        - name: tutorId
+          required: true
+          in: path
+          schema:
+            type: number
       responses:
         '200':
-          description: ''
+          description: Liste des étudiants du tuteur
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
       tags: *ref_1
   /admins/sign-up:
     post:
@@ -212,18 +223,6 @@ paths:
           description: ''
       tags: *ref_2
   /students/{id}:
-    get:
-      operationId: StudentsController_findAllStudentsByTutor
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: number
-      responses:
-        '200':
-          description: ''
-      tags: *ref_2
     delete:
       operationId: StudentsController_remove
       parameters:
@@ -483,6 +482,9 @@ components:
         - firstname
         - admin_id
     VerifyEmailDto:
+      type: object
+      properties: {}
+    Student:
       type: object
       properties: {}
     CreateAdminDto:
