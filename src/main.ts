@@ -57,6 +57,6 @@ async function bootstrap() {
 
   app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 void bootstrap();
