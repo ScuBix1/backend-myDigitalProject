@@ -9,12 +9,8 @@ export class MessageService {
 
   constructor(private configService: ConfigService) {
     this.mailTransport = createTransport({
-      host: this.configService.get('MAIL_HOST'),
-      port: Number(this.configService.get('MAIL_PORT')),
+      service: 'gmail',
       secure: false,
-      tls: {
-        rejectUnauthorized: false,
-      },
       auth: {
         user: this.configService.get('MAIL_USER'),
         pass: this.configService.get('MAIL_PASS'),
