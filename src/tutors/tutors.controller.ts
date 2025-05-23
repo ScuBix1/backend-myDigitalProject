@@ -19,6 +19,7 @@ import { CurrentTutor } from 'src/auth/decorators/current-tutor.decorator';
 import { NoAccountGuard } from 'src/auth/decorators/no-account-guard.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JwtPayload } from 'src/constants/interfaces/jwt-payload.interface';
+import { EmailDto } from 'src/message/dto/email.dto';
 import { Student } from 'src/students/entities/student.entity';
 import { CreateTutorDto } from './dto/create-tutor.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
@@ -43,8 +44,8 @@ export class TutorsController {
 
   @NoAccountGuard()
   @Post('verification-otp')
-  async generateEmailVerification(@Body() email: string) {
-    await this.tutorsService.generateEmailVerification(email);
+  async generateEmailVerification(@Body() body: EmailDto) {
+    await this.tutorsService.generateEmailVerification(body.email);
     return { status: 'succès', message: "Le mail est en cours d'envoi" };
   }
 
