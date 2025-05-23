@@ -135,6 +135,12 @@ paths:
     post:
       operationId: TutorsController_generateEmailVerification
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailDto'
       responses:
         '201':
           description: ''
@@ -481,6 +487,9 @@ components:
         - lastname
         - firstname
         - admin_id
+    EmailDto:
+      type: object
+      properties: {}
     VerifyEmailDto:
       type: object
       properties: {}
