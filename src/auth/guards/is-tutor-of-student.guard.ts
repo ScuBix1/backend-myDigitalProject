@@ -19,7 +19,7 @@ export class IsTutorOfStudentGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
-    const user = request.body as JwtPayload;
+    const user = request.user as JwtPayload;
     const studentId = parseInt(request.params.id);
 
     if (!user || user.role !== 'tutor') return false;
@@ -27,7 +27,9 @@ export class IsTutorOfStudentGuard implements CanActivate {
 
     const student = await this.studentsRepository.findOne({
       where: { id: studentId },
+      relations: ['tutor'],
     });
+
     if (!student || !student.tutor || student.tutor.id !== +user.id) {
       throw new NotFoundException("Vous n'avez pas accès à cet élève");
     }

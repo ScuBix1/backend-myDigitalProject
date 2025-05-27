@@ -7,13 +7,16 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { plainToInstance } from 'class-transformer';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { MessageService } from 'src/message/message.service';
+import { ResponseStudentDto } from 'src/students/dto/response-student.dto';
 import { Student } from 'src/students/entities/student.entity';
 import { VerificationService } from 'src/verification/verification.service';
 import { Repository } from 'typeorm';
 import { StripeService } from '../stripe/stripe.service';
 import { CreateTutorDto } from './dto/create-tutor.dto';
+import { ResponseTutorDto } from './dto/response-tutor.dto';
 import { Tutor } from './entities/tutor.entity';
 
 @Injectable()
@@ -43,7 +46,9 @@ export class TutorsService {
       );
     }
 
-    return tutor;
+    return plainToInstance(ResponseTutorDto, tutor, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async create(createTutorDto: CreateTutorDto) {
@@ -69,10 +74,9 @@ export class TutorsService {
       });
 
       const savedTutor = await this.tutorsRepository.save(tutor);
-
-      const { lastname, firstname, email, dob } = savedTutor;
-
-      return { lastname, firstname, email, dob };
+      return plainToInstance(ResponseTutorDto, savedTutor, {
+        excludeExtraneousValues: true,
+      });
     } catch {
       throw new UnauthorizedException('Un tuteur avec cet email existe déjà');
     }
@@ -169,7 +173,9 @@ export class TutorsService {
     });
 
     const studentsResponse = students.map((student) => {
-      return student;
+      return plainToInstance(ResponseStudentDto, student, {
+        excludeExtraneousValues: true,
+      });
     });
 
     return studentsResponse;

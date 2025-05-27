@@ -220,10 +220,42 @@ paths:
       summary: Inscription d'un étudiant
       tags: &ref_2
         - Students
+  /students/{id}/avatar:
+    patch:
+      operationId: StudentsController_updateAvatar
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStudentAvatarDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
   /students:
     get:
       operationId: StudentsController_findAll
       parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+  /students/{id}/progressions:
+    get:
+      operationId: StudentsController_getStudentProgressions
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
       responses:
         '200':
           description: ''
@@ -393,6 +425,14 @@ paths:
         - Games
     get:
       operationId: GamesController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /games/count:
+    get:
+      operationId: GamesController_getGameCount
       parameters: []
       responses:
         '200':
@@ -579,6 +619,9 @@ components:
         - duration
         - tutor_id
         - grade
+    UpdateStudentAvatarDto:
+      type: object
+      properties: {}
     CreateSubscriptionDto:
       type: object
       properties:

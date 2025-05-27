@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -27,6 +28,7 @@ export class Student {
   })
   username!: string;
 
+  @Exclude()
   @Column()
   password!: string;
 
@@ -53,4 +55,7 @@ export class Student {
 
   @OneToMany(() => Session, (session) => session.student, { cascade: true })
   sessions?: Session[];
+
+  @Column({ default: 'wizard.png' })
+  avatar!: string;
 }

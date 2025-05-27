@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { IsTutorOfStudentGuard } from 'src/auth/guards/is-tutor-of-student.guard
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateStudentAvatarDto } from './dto/update-student-avatar.dto';
 import { StudentsService } from './students.service';
 
 @Controller('students')
@@ -37,11 +39,28 @@ export class StudentsController {
     return this.studentsService.create(createStudentDto);
   }
 
+  @Patch(':id/avatar')
+  @UseGuards(JwtAuthGuard, RolesGuard, IsTutorOfStudentGuard)
+  @Roles('tutor')
+  async updateAvatar(
+    @Param('id') id: string,
+    @Body() dto: UpdateStudentAvatarDto,
+  ) {
+    return this.studentsService.updateAvatar(+id, dto.avatar);
+  }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get()
   findAll() {
     return this.studentsService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard, IsTutorOfStudentGuard)
+  @Roles('tutor')
+  @Get(':id/progressions')
+  async getStudentProgressions(@Param('id') id: string) {
+    return this.studentsService.getProgressions(+id);
   }
 
   @UseGuards(JwtAuthGuard, IsTutorOfStudentGuard)
