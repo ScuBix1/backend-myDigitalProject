@@ -215,4 +215,16 @@ export class TutorsService {
       excludeExtraneousValues: true,
     });
   }
+
+  async findTutorById(tutorId: number) {
+    const tutor = await this.tutorsRepository.findOneBy({ id: tutorId });
+
+    if (!tutor) {
+      throw new NotFoundException('Tuteur non trouvé');
+    }
+
+    return plainToInstance(ResponseTutorDto, tutor, {
+      excludeExtraneousValues: true,
+    });
+  }
 }

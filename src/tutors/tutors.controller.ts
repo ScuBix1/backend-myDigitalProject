@@ -86,9 +86,11 @@ export class TutorsController {
   ) {
     return this.tutorsService.updateTutor(+tutorId, updateTutorDto, jwtTutorId);
   }
-  @UseGuards(JwtAuthGuard)
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('tutor')
   @Get('me')
-  getMe(@GetJwtUserId() userId: string) {
-    return { userId };
+  getMyTutorProfile(@GetJwtUserId() tutorId: string) {
+    return this.tutorsService.findTutorById(+tutorId);
   }
 }

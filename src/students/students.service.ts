@@ -16,6 +16,7 @@ import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { Repository } from 'typeorm';
 import { StudentsResponse } from '../constants/interfaces/students-response.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { ResponseStudentWithPasswordDto } from './dto/response-student-with-password.dto';
 import { ResponseStudentDto } from './dto/response-student.dto';
 import { Student } from './entities/student.entity';
 
@@ -192,5 +193,48 @@ export class StudentsService {
     });
 
     return progressions;
+  }
+
+  async updateStudentByTutor(
+    studentId: number,
+    tutorId: number,
+    updateData: Partial<{
+      firstname: string;
+      lastname: string;
+      password: string;
+    }>,
+  ): Promise<ResponseStudentDto> {
+    const student = await this.studentsRepository.findOne({
+      where: { id: studentId },
+      relations: ['tutor'],
+    });
+
+    if (!student) {
+      throw new NotFoundException("L'étudiant spécifié n'existe pas");
+    }
+
+    if (student.tutor.id !== tutorId) {
+      throw new UnauthorizedException("Ce n'est pas votre élève");
+    }
+
+    if (updateData.firstname) {
+      student.firstname = updateData.firstname;
+    }
+
+    if (updateData.lastname) {
+      student.lastname = updateData.lastname;
+    }
+
+    if (updateData.password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(updateData.password, salt);
+      student.password = hashedPassword;
+    }
+
+    const updated = await this.studentsRepository.save(student);
+
+    return plainToInstance(ResponseStudentWithPasswordDto, updated, {
+      excludeExtraneousValues: true,
+    });
   }
 }
