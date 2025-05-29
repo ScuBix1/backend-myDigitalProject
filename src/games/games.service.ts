@@ -20,6 +20,10 @@ export class GamesService {
     return plainToInstance(ResponseGameDto, savedGame);
   }
 
+  async countGames(): Promise<number> {
+    return this.gamesRepository.count();
+  }
+
   findAll() {
     return `This action returns all games`;
   }

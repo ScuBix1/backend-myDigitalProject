@@ -33,8 +33,8 @@ export class Tutor {
     description:
       'Mot de passe du tuteur (1 majuscule, 1 minuscule, 8 caractères minimum, 1 caractère spéciale) ',
   })
-  @Column()
   @Exclude()
+  @Column()
   password!: string;
 
   @ApiProperty({

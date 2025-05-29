@@ -20,7 +20,7 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) return true;
 
     const request: Request = context.switchToHttp().getRequest();
-    const user = request.body as JwtPayload;
+    const user = request.user as JwtPayload;
 
     if (!requiredRoles.includes(user.role)) {
       throw new ForbiddenException('Accès interdit');

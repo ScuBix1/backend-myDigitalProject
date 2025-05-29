@@ -178,6 +178,33 @@ paths:
                 items:
                   $ref: '#/components/schemas/Student'
       tags: *ref_1
+  /tutors/{id}:
+    patch:
+      operationId: TutorsController_updateTutor
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTutorDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
+  /tutors/me:
+    get:
+      operationId: TutorsController_getMyTutorProfile
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
   /admins/sign-up:
     post:
       operationId: AdminsController_create
@@ -220,10 +247,42 @@ paths:
       summary: Inscription d'un étudiant
       tags: &ref_2
         - Students
+  /students/{id}/avatar:
+    patch:
+      operationId: StudentsController_updateAvatar
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStudentAvatarDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
   /students:
     get:
       operationId: StudentsController_findAll
       parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+  /students/{id}/progressions:
+    get:
+      operationId: StudentsController_getStudentProgressions
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
       responses:
         '200':
           description: ''
@@ -237,6 +296,24 @@ paths:
           in: path
           schema:
             type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+    patch:
+      operationId: StudentsController_updateStudent
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStudentDto'
       responses:
         '200':
           description: ''
@@ -398,6 +475,14 @@ paths:
         '200':
           description: ''
       tags: *ref_6
+  /games/count:
+    get:
+      operationId: GamesController_getGameCount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
   /games/{id}:
     get:
       operationId: GamesController_findOne
@@ -496,6 +581,9 @@ components:
     Student:
       type: object
       properties: {}
+    UpdateTutorDto:
+      type: object
+      properties: {}
     CreateAdminDto:
       type: object
       properties:
@@ -579,6 +667,12 @@ components:
         - duration
         - tutor_id
         - grade
+    UpdateStudentAvatarDto:
+      type: object
+      properties: {}
+    UpdateStudentDto:
+      type: object
+      properties: {}
     CreateSubscriptionDto:
       type: object
       properties:

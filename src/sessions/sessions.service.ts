@@ -38,6 +38,7 @@ export class SessionsService {
 
     const student = await this.studentsRepository.findOne({
       where: { id: createSessionDto.student_id },
+      relations: ['tutor'],
     });
 
     if (!student) {
@@ -59,30 +60,31 @@ export class SessionsService {
 
     const tutor = await this.tutorsRepository.findOne({
       where: { id: student.tutor.id },
-      relations: ['subscription'],
+      relations: ['tutorSubscriptions'],
     });
 
-    if (tutor?.tutorSubscriptions && !tutor.has_used_free_session) {
-      const session = this.sessionsRepository.create({
-        ...createSessionDto,
-        game,
-        student,
-      });
+    const hasSubscription =
+      tutor && tutor.tutorSubscriptions && tutor.tutorSubscriptions.length > 0;
 
-      await this.sessionsRepository.save(session);
-      const { id: idStudent } = student;
-      const { id: idGame } = game;
-      const responseSavedSession = plainToInstance(ResponseSessionDto, session);
-      tutor.has_used_free_session = true;
-      await this.tutorsRepository.save(tutor);
-      return { responseSavedSession, game: idGame, student: idStudent };
-    }
-
-    if (tutor?.has_used_free_session) {
+    if (!hasSubscription && game.id !== 1) {
       throw new ForbiddenException(
-        'Vous avez déjà utilisé votre partie gratuite.',
+        'Vous devez vous abonner pour accéder à ce jeu.',
       );
     }
+
+    const session = this.sessionsRepository.create({
+      ...createSessionDto,
+      game,
+      student,
+    });
+
+    await this.sessionsRepository.save(session);
+
+    return {
+      session: plainToInstance(ResponseSessionDto, session),
+      game: game.id,
+      student: student.id,
+    };
   }
 
   findAll() {

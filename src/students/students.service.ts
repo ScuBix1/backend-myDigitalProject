@@ -4,16 +4,19 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
+import { Session } from 'src/sessions/entities/session.entity';
 import { SubscriptionsService } from 'src/subscriptions/subscriptions.service';
 import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { Repository } from 'typeorm';
 import { StudentsResponse } from '../constants/interfaces/students-response.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { ResponseStudentWithPasswordDto } from './dto/response-student-with-password.dto';
 import { ResponseStudentDto } from './dto/response-student.dto';
 import { Student } from './entities/student.entity';
 
@@ -26,6 +29,8 @@ export class StudentsService {
     private tutorsRepository: Repository<Tutor>,
     @Inject(forwardRef(() => SubscriptionsService))
     private subscriptionService: SubscriptionsService,
+    @InjectRepository(Session)
+    private sessionsRepository: Repository<Session>,
   ) {}
 
   async create(createStudentDto: CreateStudentDto) {
@@ -146,10 +151,90 @@ export class StudentsService {
     }
 
     if (student.tutor.id !== tutor.id) {
-      throw new NotFoundException("Ce n'est pas votre étudiant");
+      throw new UnauthorizedException("Ce n'est pas votre étudiant");
     }
 
     await this.studentsRepository.delete(id);
     return `Votre élève ${student.firstname} ${student.lastname} a été supprimé`;
+  }
+
+  async updateAvatar(
+    studentId: number,
+    avatar: string,
+  ): Promise<ResponseStudentDto> {
+    const student = await this.studentsRepository.findOneBy({ id: studentId });
+
+    if (!student) throw new NotFoundException('Étudiant non trouvé');
+
+    student.avatar = avatar;
+    const studentSaved = await this.studentsRepository.save(student);
+    return plainToInstance(ResponseStudentDto, studentSaved, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async getProgressions(studentId: number) {
+    const sessions = await this.sessionsRepository.find({
+      where: { student: { id: studentId } },
+      relations: ['game'],
+    });
+
+    const progressions = sessions.map((session) => {
+      const maxScore = session.game.score || 1;
+      const percent = (session.score / maxScore) * 100;
+
+      return {
+        gameId: session.game.id,
+        gameName: session.game.name,
+        score: session.score,
+        maxScore: session.game.score,
+        percent: Math.round(percent),
+      };
+    });
+
+    return progressions;
+  }
+
+  async updateStudentByTutor(
+    studentId: number,
+    tutorId: number,
+    updateData: Partial<{
+      firstname: string;
+      lastname: string;
+      password: string;
+    }>,
+  ): Promise<ResponseStudentDto> {
+    const student = await this.studentsRepository.findOne({
+      where: { id: studentId },
+      relations: ['tutor'],
+    });
+
+    if (!student) {
+      throw new NotFoundException("L'étudiant spécifié n'existe pas");
+    }
+
+    if (student.tutor.id !== tutorId) {
+      throw new UnauthorizedException("Ce n'est pas votre élève");
+    }
+
+    if (updateData.firstname) {
+      student.firstname = updateData.firstname;
+    }
+
+    if (updateData.lastname) {
+      student.lastname = updateData.lastname;
+    }
+
+    if (updateData.password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(updateData.password, salt);
+      student.password = hashedPassword;
+    }
+
+    const updated = await this.studentsRepository.save(student);
+
+    return plainToInstance(ResponseStudentWithPasswordDto, updated, {
+      excludeExtraneousValues: true,
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
 import { Grades } from 'src/constants/enums/grades.enum';
 
-export class ResponseStudentDto {
+export class ResponseStudentWithPasswordDto {
   @Expose()
   id!: number;
   @Expose()
@@ -14,4 +14,6 @@ export class ResponseStudentDto {
   grade!: Grades;
   @Expose()
   avatar!: string;
+  @Expose()
+  password!: string;
 }

@@ -303,6 +303,53 @@
         ]
       }
     },
+    "/tutors/{id}": {
+      "patch": {
+        "operationId": "TutorsController_updateTutor",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTutorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tutors"
+        ]
+      }
+    },
+    "/tutors/me": {
+      "get": {
+        "operationId": "TutorsController_getMyTutorProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tutors"
+        ]
+      }
+    },
     "/admins/sign-up": {
       "post": {
         "operationId": "AdminsController_create",
@@ -370,10 +417,66 @@
         ]
       }
     },
+    "/students/{id}/avatar": {
+      "patch": {
+        "operationId": "StudentsController_updateAvatar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentAvatarDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Students"
+        ]
+      }
+    },
     "/students": {
       "get": {
         "operationId": "StudentsController_findAll",
         "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Students"
+        ]
+      }
+    },
+    "/students/{id}/progressions": {
+      "get": {
+        "operationId": "StudentsController_getStudentProgressions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -397,6 +500,37 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Students"
+        ]
+      },
+      "patch": {
+        "operationId": "StudentsController_updateStudent",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -672,6 +806,20 @@
         ]
       }
     },
+    "/games/count": {
+      "get": {
+        "operationId": "GamesController_getGameCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
     "/games/{id}": {
       "get": {
         "operationId": "GamesController_findOne",
@@ -812,6 +960,10 @@
         "type": "object",
         "properties": {}
       },
+      "UpdateTutorDto": {
+        "type": "object",
+        "properties": {}
+      },
       "CreateAdminDto": {
         "type": "object",
         "properties": {
@@ -916,6 +1068,14 @@
           "tutor_id",
           "grade"
         ]
+      },
+      "UpdateStudentAvatarDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateStudentDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreateSubscriptionDto": {
         "type": "object",

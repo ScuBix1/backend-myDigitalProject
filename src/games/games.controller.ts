@@ -29,6 +29,12 @@ export class GamesController {
     return this.gamesService.findAll();
   }
 
+  @Get('count')
+  async getGameCount(): Promise<{ total: number }> {
+    const total = await this.gamesService.countGames();
+    return { total };
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
