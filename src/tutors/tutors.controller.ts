@@ -16,12 +16,16 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { CurrentTutor } from 'src/auth/decorators/current-tutor.decorator';
+import { GetJwtUserId } from 'src/auth/decorators/get-jwt-user-id.decorator';
 import { NoAccountGuard } from 'src/auth/decorators/no-account-guard.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { JwtPayload } from 'src/constants/interfaces/jwt-payload.interface';
 import { EmailDto } from 'src/message/dto/email.dto';
 import { Student } from 'src/students/entities/student.entity';
 import { CreateTutorDto } from './dto/create-tutor.dto';
+import { UpdateTutorDto } from './dto/update-tutor.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { TutorsService } from './tutors.service';
 
@@ -70,5 +74,21 @@ export class TutorsController {
     @CurrentTutor('id') user: JwtPayload,
   ) {
     return this.tutorsService.findAllStudentsByTutor(tutorId, user.id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('tutor')
+  @Patch(':id')
+  async updateTutor(
+    @Param('id') tutorId: string,
+    @Body() updateTutorDto: UpdateTutorDto,
+    @GetJwtUserId() jwtTutorId: string,
+  ) {
+    return this.tutorsService.updateTutor(+tutorId, updateTutorDto, jwtTutorId);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  getMe(@GetJwtUserId() userId: string) {
+    return { userId };
   }
 }

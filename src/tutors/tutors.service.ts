@@ -17,6 +17,7 @@ import { Repository } from 'typeorm';
 import { StripeService } from '../stripe/stripe.service';
 import { CreateTutorDto } from './dto/create-tutor.dto';
 import { ResponseTutorDto } from './dto/response-tutor.dto';
+import { UpdateTutorDto } from './dto/update-tutor.dto';
 import { Tutor } from './entities/tutor.entity';
 
 @Injectable()
@@ -179,5 +180,39 @@ export class TutorsService {
     });
 
     return studentsResponse;
+  }
+
+  async updateTutor(
+    tutorId: number,
+    updateTutorDto: UpdateTutorDto,
+    jwtTutorId: string,
+  ) {
+    if (tutorId !== parseInt(jwtTutorId)) {
+      throw new UnauthorizedException("Vous n'avez pas le droit de modifier.");
+    }
+
+    const tutor = await this.tutorsRepository.findOne({
+      where: { id: tutorId },
+    });
+
+    if (!tutor) {
+      throw new NotFoundException('Tuteur non trouvé');
+    }
+
+    if (updateTutorDto.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateTutorDto.password = await bcrypt.hash(
+        updateTutorDto.password,
+        salt,
+      );
+    }
+
+    Object.assign(tutor, updateTutorDto);
+
+    const updatedTutor = await this.tutorsRepository.save(tutor);
+
+    return plainToInstance(ResponseTutorDto, updatedTutor, {
+      excludeExtraneousValues: true,
+    });
   }
 }

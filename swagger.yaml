@@ -178,6 +178,33 @@ paths:
                 items:
                   $ref: '#/components/schemas/Student'
       tags: *ref_1
+  /tutors/{id}:
+    patch:
+      operationId: TutorsController_updateTutor
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTutorDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
+  /tutors/me:
+    get:
+      operationId: TutorsController_getMe
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
   /admins/sign-up:
     post:
       operationId: AdminsController_create
@@ -534,6 +561,9 @@ components:
       type: object
       properties: {}
     Student:
+      type: object
+      properties: {}
+    UpdateTutorDto:
       type: object
       properties: {}
     CreateAdminDto:

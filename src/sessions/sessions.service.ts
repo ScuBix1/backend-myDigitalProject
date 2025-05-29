@@ -63,9 +63,8 @@ export class SessionsService {
       relations: ['tutorSubscriptions'],
     });
 
-    // S'il n'a pas d'abonnement et essaie un autre jeu que le 1 => refus
-    console.log(tutor?.tutorSubscriptions);
-    const hasSubscription = !!tutor?.tutorSubscriptions;
+    const hasSubscription =
+      tutor && tutor.tutorSubscriptions && tutor.tutorSubscriptions.length > 0;
 
     if (!hasSubscription && game.id !== 1) {
       throw new ForbiddenException(
