@@ -116,7 +116,6 @@ export class StripeService {
 
       if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
-        console.log('ssssseeeeeessssssiiiiiooooonnnnnn', session);
         if (session.payment_status === 'paid') {
           const customerId = session.customer as string;
           const subscriptionId = session.subscription as string;

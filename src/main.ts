@@ -22,7 +22,6 @@ async function bootstrap() {
     origin: [process.env.LOCAL_ORIGIN, process.env.REMOTE_ORIGIN],
     credentials: true,
   });
-
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());

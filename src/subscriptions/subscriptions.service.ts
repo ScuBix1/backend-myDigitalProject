@@ -108,7 +108,7 @@ export class SubscriptionsService {
 
       if (previousTrial) {
         throw new BadRequestException(
-          'Le tuteur a déjà bénéficié de l’offre d’essai.',
+          "Le tuteur a déjà bénéficié de l'offre d'essai.",
         );
       }
       endDate = new Date(startDate.getTime() + 15 * 24 * 60 * 60 * 1000);

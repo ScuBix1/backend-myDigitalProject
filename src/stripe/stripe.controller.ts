@@ -15,10 +15,6 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CreateCheckoutSessionDto } from './dto/create-checkout-session.dto';
 import { StripeService } from './stripe.service';
 
-interface RawBodyRequest extends Request {
-  rawBody: Buffer;
-}
-
 @Controller('stripe')
 export class StripeController {
   constructor(private readonly stripeService: StripeService) {}
@@ -43,14 +39,11 @@ export class StripeController {
     @Res() response: Response,
     @Headers('stripe-signature') signature: string,
   ) {
-    const rawBody = request.body;
     try {
-      console.log(rawBody);
-      await this.stripeService.handleWebhook(rawBody, signature);
-
-      return response.status(HttpStatus.OK).send({ received: true });
+      await this.stripeService.handleWebhook(request.body, signature);
+      response.status(HttpStatus.OK).send({ received: true });
     } catch {
-      return response.status(HttpStatus.BAD_REQUEST).send(`Webhook Error`);
+      response.status(HttpStatus.BAD_REQUEST).send(`Webhook Error`);
     }
   }
 }
