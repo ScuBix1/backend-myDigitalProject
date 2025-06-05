@@ -223,7 +223,6 @@ export class StudentsService {
       where: { id: studentId },
       relations: ['tutor'],
     });
-    console.log(student);
 
     if (!student) {
       throw new NotFoundException("L'étudiant spécifié n'existe pas");
