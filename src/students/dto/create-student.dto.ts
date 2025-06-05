@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -34,6 +36,7 @@ export class CreateStudentDto {
     example: 'Mypassword123!',
     description: 'Mot de passe sécurisé',
   })
+  @Exclude()
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsString({ message: i18nValidationMessage('validation.isString') })
   password!: string;
@@ -68,4 +71,15 @@ export class CreateStudentDto {
   @IsEnum(Grades, { message: i18nValidationMessage('validation.isEnum') })
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   grade!: Grades;
+
+  @IsString({ message: i18nValidationMessage('validation.isString') })
+  @IsIn([
+    'cat.png',
+    'cloud.png',
+    'ladybug.png',
+    'zebra.png',
+    'robot.png',
+    'wizard.png',
+  ])
+  avatar!: string;
 }

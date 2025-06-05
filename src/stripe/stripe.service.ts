@@ -63,7 +63,7 @@ export class StripeService {
 
   async createCheckoutSession(
     createCheckoutSessionDto: CreateCheckoutSessionDto,
-  ): Promise<string | null> {
+  ) {
     const { customer_id, price_id } = createCheckoutSessionDto;
     const session = await this.stripe.checkout.sessions.create({
       customer: customer_id,
@@ -75,10 +75,13 @@ export class StripeService {
         },
       ],
       mode: 'subscription',
-      success_url: `${this.configService.get('URL_BASE')}/success`,
-      cancel_url: `${this.configService.get('URL_BASE')}/cancel`,
+      success_url: `${this.configService.get('LOCAL_ORIGIN')}/tutor/dashboard`,
+      cancel_url: `${this.configService.get('LOCAL_ORIGIN')}/tutor/subscription`,
     });
-    return session.url;
+
+    const url = session.url;
+
+    return { url };
   }
 
   async getSubscription(subscriptionId: string) {
@@ -113,6 +116,7 @@ export class StripeService {
 
       if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
+        console.log('ssssseeeeeessssssiiiiiooooonnnnnn', session);
         if (session.payment_status === 'paid') {
           const customerId = session.customer as string;
           const subscriptionId = session.subscription as string;
@@ -152,7 +156,8 @@ export class StripeService {
       }
 
       return event;
-    } catch {
+    } catch (err) {
+      console.log(err);
       throw new BadRequestException(`La vérification a échoué`);
     }
   }

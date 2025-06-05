@@ -89,6 +89,21 @@ export class StudentsService {
     return responseSavedStudent;
   }
 
+  async findOne(id: number) {
+    const student = await this.studentsRepository.findOne({
+      where: { id },
+      relations: ['tutor'],
+    });
+
+    if (!student) {
+      throw new NotFoundException('Étudiant non trouvé');
+    }
+
+    return plainToInstance(ResponseStudentDto, student, {
+      excludeExtraneousValues: true,
+    });
+  }
+
   async findOneByUsername(username: string) {
     const student = await this.studentsRepository.findOne({
       where: { username: username },
@@ -208,6 +223,7 @@ export class StudentsService {
       where: { id: studentId },
       relations: ['tutor'],
     });
+    console.log(student);
 
     if (!student) {
       throw new NotFoundException("L'étudiant spécifié n'existe pas");
@@ -231,7 +247,10 @@ export class StudentsService {
       student.password = hashedPassword;
     }
 
-    const updated = await this.studentsRepository.save(student);
+    const updated = await this.studentsRepository.save({
+      ...student,
+      ...updateData,
+    });
 
     return plainToInstance(ResponseStudentWithPasswordDto, updated, {
       excludeExtraneousValues: true,

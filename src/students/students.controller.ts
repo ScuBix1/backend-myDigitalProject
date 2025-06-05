@@ -41,6 +41,14 @@ export class StudentsController {
     return this.studentsService.create(createStudentDto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async getStudentById(@Param('id') id: string) {
+    const student = await this.studentsService.findOne(+id);
+
+    return student;
+  }
+
   @Patch(':id/avatar')
   @UseGuards(JwtAuthGuard, RolesGuard, IsTutorOfStudentGuard)
   @Roles('tutor')

@@ -14,4 +14,6 @@ export class ResponseStudentDto {
   grade!: Grades;
   @Expose()
   avatar!: string;
+  @Expose()
+  duration?: number;
 }
