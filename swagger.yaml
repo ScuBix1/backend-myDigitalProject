@@ -247,6 +247,49 @@ paths:
       summary: Inscription d'un étudiant
       tags: &ref_2
         - Students
+  /students/{id}:
+    get:
+      operationId: StudentsController_getStudentById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+    delete:
+      operationId: StudentsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+    patch:
+      operationId: StudentsController_updateStudent
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStudentDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
   /students/{id}/avatar:
     patch:
       operationId: StudentsController_updateAvatar
@@ -283,37 +326,6 @@ paths:
           in: path
           schema:
             type: string
-      responses:
-        '200':
-          description: ''
-      tags: *ref_2
-  /students/{id}:
-    delete:
-      operationId: StudentsController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-      tags: *ref_2
-    patch:
-      operationId: StudentsController_updateStudent
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateStudentDto'
       responses:
         '200':
           description: ''

@@ -15,4 +15,6 @@ export class ResponseTutorDto {
   firstname!: string;
   @Expose()
   created_at!: Date;
+  @Expose()
+  customer_id?: string;
 }

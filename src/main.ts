@@ -1,6 +1,7 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import * as express from 'express';
@@ -15,11 +16,12 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use('/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
+
   app.enableCors({
     origin: [process.env.LOCAL_ORIGIN, process.env.REMOTE_ORIGIN],
     credentials: true,
   });
-
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
@@ -55,8 +57,6 @@ async function bootstrap() {
   }
 
   SwaggerModule.setup('api', app, documentFactory);
-
-  app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
 
   await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }

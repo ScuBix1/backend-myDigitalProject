@@ -63,7 +63,7 @@ export class StripeService {
 
   async createCheckoutSession(
     createCheckoutSessionDto: CreateCheckoutSessionDto,
-  ): Promise<string | null> {
+  ) {
     const { customer_id, price_id } = createCheckoutSessionDto;
     const session = await this.stripe.checkout.sessions.create({
       customer: customer_id,
@@ -75,10 +75,13 @@ export class StripeService {
         },
       ],
       mode: 'subscription',
-      success_url: `${this.configService.get('URL_BASE')}/success`,
-      cancel_url: `${this.configService.get('URL_BASE')}/cancel`,
+      success_url: `${this.configService.get('LOCAL_ORIGIN')}/tutor/dashboard`,
+      cancel_url: `${this.configService.get('LOCAL_ORIGIN')}/tutor/subscription`,
     });
-    return session.url;
+
+    const url = session.url;
+
+    return { url };
   }
 
   async getSubscription(subscriptionId: string) {

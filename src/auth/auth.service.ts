@@ -89,6 +89,7 @@ export class AuthService {
         id: tutor.id,
         username: tutor.email,
         role: 'tutor',
+        customer_id: tutor.customer_id,
       };
 
       return {
