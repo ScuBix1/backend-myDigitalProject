@@ -155,7 +155,7 @@ export class StripeService {
       }
 
       return event;
-    } catch (err) {
+    } catch {
       throw new BadRequestException(`La vérification a échoué`);
     }
   }
