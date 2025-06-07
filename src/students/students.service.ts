@@ -16,7 +16,6 @@ import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { Repository } from 'typeorm';
 import { StudentsResponse } from '../constants/interfaces/students-response.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
-import { ResponseStudentWithPasswordDto } from './dto/response-student-with-password.dto';
 import { ResponseStudentDto } from './dto/response-student.dto';
 import { Student } from './entities/student.entity';
 
@@ -58,7 +57,6 @@ export class StudentsService {
     const hasAlreadyUsedFreeSession = tutor.has_used_free_session;
     const hasSubscription =
       await this.subscriptionService.hasActiveSubscription(tutor_id);
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(createStudentDto.password, salt);
     const student = this.studentsRepository.create({
@@ -251,7 +249,7 @@ export class StudentsService {
       ...updateData,
     });
 
-    return plainToInstance(ResponseStudentWithPasswordDto, updated, {
+    return plainToInstance(ResponseStudentDto, updated, {
       excludeExtraneousValues: true,
     });
   }

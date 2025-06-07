@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
@@ -36,7 +35,6 @@ export class CreateStudentDto {
     example: 'Mypassword123!',
     description: 'Mot de passe sécurisé',
   })
-  @Exclude()
   @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
   @IsString({ message: i18nValidationMessage('validation.isString') })
   password!: string;
