@@ -723,10 +723,21 @@
         "tags": [
           "Sessions"
         ]
-      },
+      }
+    },
+    "/sessions/student/{studentId}": {
       "get": {
-        "operationId": "SessionsController_findAll",
-        "parameters": [],
+        "operationId": "SessionsController_findAllByStudent",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -737,12 +748,20 @@
         ]
       }
     },
-    "/sessions/{id}": {
-      "get": {
-        "operationId": "SessionsController_findOne",
+    "/sessions/{sessionId}/high-score/{newScore}": {
+      "patch": {
+        "operationId": "SessionsController_updateHighScore",
         "parameters": [
           {
-            "name": "id",
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newScore",
             "required": true,
             "in": "path",
             "schema": {
@@ -758,12 +777,22 @@
         "tags": [
           "Sessions"
         ]
-      },
-      "patch": {
-        "operationId": "SessionsController_update",
+      }
+    },
+    "/sessions/student/{studentId}/game/{gameId}": {
+      "get": {
+        "operationId": "SessionsController_findByStudentAndGame",
         "parameters": [
           {
-            "name": "id",
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gameId",
             "required": true,
             "in": "path",
             "schema": {
@@ -771,16 +800,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSessionDto"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": ""
@@ -1149,10 +1168,6 @@
           "student_id",
           "game_id"
         ]
-      },
-      "UpdateSessionDto": {
-        "type": "object",
-        "properties": {}
       },
       "CreateGameDto": {
         "type": "object",

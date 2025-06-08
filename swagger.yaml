@@ -427,18 +427,11 @@ paths:
           description: ''
       tags: &ref_5
         - Sessions
+  /sessions/student/{studentId}:
     get:
-      operationId: SessionsController_findAll
-      parameters: []
-      responses:
-        '200':
-          description: ''
-      tags: *ref_5
-  /sessions/{id}:
-    get:
-      operationId: SessionsController_findOne
+      operationId: SessionsController_findAllByStudent
       parameters:
-        - name: id
+        - name: studentId
           required: true
           in: path
           schema:
@@ -447,20 +440,38 @@ paths:
         '200':
           description: ''
       tags: *ref_5
+  /sessions/{sessionId}/high-score/{newScore}:
     patch:
-      operationId: SessionsController_update
+      operationId: SessionsController_updateHighScore
       parameters:
-        - name: id
+        - name: sessionId
           required: true
           in: path
           schema:
             type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateSessionDto'
+        - name: newScore
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /sessions/student/{studentId}/game/{gameId}:
+    get:
+      operationId: SessionsController_findByStudentAndGame
+      parameters:
+        - name: studentId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: gameId
+          required: true
+          in: path
+          schema:
+            type: string
       responses:
         '200':
           description: ''
@@ -724,9 +735,6 @@ components:
         - score
         - student_id
         - game_id
-    UpdateSessionDto:
-      type: object
-      properties: {}
     CreateGameDto:
       type: object
       properties:

@@ -11,7 +11,6 @@ import { Tutor } from 'src/tutors/entities/tutor.entity';
 import { Repository } from 'typeorm';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { ResponseSessionDto } from './dto/response-session.dto';
-import { UpdateSessionDto } from './dto/update-session.dto';
 import { Session } from './entities/session.entity';
 
 @Injectable()
@@ -38,7 +37,7 @@ export class SessionsService {
 
     const student = await this.studentsRepository.findOne({
       where: { id: createSessionDto.student_id },
-      relations: ['tutor'],
+      relations: ['tutor', 'tutorSubscription'],
     });
 
     if (!student) {
@@ -58,13 +57,10 @@ export class SessionsService {
       );
     }
 
-    const tutor = await this.tutorsRepository.findOne({
-      where: { id: student.tutor.id },
-      relations: ['tutorSubscriptions'],
-    });
-
     const hasSubscription =
-      tutor && tutor.tutorSubscriptions && tutor.tutorSubscriptions.length > 0;
+      student.tutor &&
+      student.tutor.tutorSubscriptions &&
+      student.tutor.tutorSubscriptions.length > 0;
 
     if (!hasSubscription && game.id !== 1) {
       throw new ForbiddenException(
@@ -87,16 +83,61 @@ export class SessionsService {
     };
   }
 
-  findAll() {
-    return this.sessionsRepository.find();
+  async findAllByStudent(studentId: number) {
+    const student = await this.studentsRepository.findOne({
+      where: { id: studentId },
+    });
+
+    if (!student) {
+      throw new BadRequestException("L'étudiant spécifié n'existe pas");
+    }
+
+    const sessions = await this.sessionsRepository.find({
+      where: { student: { id: studentId } },
+      relations: ['game'],
+    });
+
+    return sessions.map((session) =>
+      plainToInstance(ResponseSessionDto, session),
+    );
   }
 
-  findOne(id: number) {
-    return this.sessionsRepository.findOne({ where: { id } });
+  async updateHighScore(sessionId: number, newScore: number) {
+    const session = await this.sessionsRepository.findOne({
+      where: { id: sessionId },
+    });
+
+    if (!session) {
+      throw new BadRequestException('Session non trouvée');
+    }
+
+    let updated = false;
+
+    if (newScore > session.score) {
+      session.score = newScore;
+      updated = true;
+    }
+
+    if (updated) {
+      await this.sessionsRepository.save(session);
+    }
+
+    return plainToInstance(ResponseSessionDto, session);
   }
 
-  async update(id: number, updateSessionDto: UpdateSessionDto) {
-    await this.sessionsRepository.update(id, updateSessionDto);
-    return updateSessionDto;
+  async findByStudentAndGame(studentId: number, gameId: number) {
+    const session = await this.sessionsRepository.findOne({
+      where: {
+        student: { id: studentId },
+        game: { id: gameId },
+      },
+      relations: ['game', 'student'],
+    });
+
+    if (!session) {
+      return null;
+    }
+
+    return plainToInstance(ResponseSessionDto, session);
   }
 }

@@ -197,11 +197,11 @@ export class StudentsService {
       const percent = (session.score / maxScore) * 100;
 
       return {
-        gameId: session.game.id,
-        gameName: session.game.name,
+        game_id: session.game.id,
+        game_name: session.game.name,
         score: session.score,
-        maxScore: session.game.score,
-        percent: Math.round(percent),
+        max_score: session.game.score,
+        per_cent: Math.round(percent),
       };
     });
 
