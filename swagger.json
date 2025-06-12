@@ -723,10 +723,21 @@
         "tags": [
           "Sessions"
         ]
-      },
+      }
+    },
+    "/sessions/student/{studentId}": {
       "get": {
-        "operationId": "SessionsController_findAll",
-        "parameters": [],
+        "operationId": "SessionsController_findAllByStudent",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -737,12 +748,28 @@
         ]
       }
     },
-    "/sessions/{id}": {
-      "get": {
-        "operationId": "SessionsController_findOne",
+    "/sessions/{gameId}/{studentId}/high-score/{newScore}": {
+      "patch": {
+        "operationId": "SessionsController_updateHighScore",
         "parameters": [
           {
-            "name": "id",
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newScore",
             "required": true,
             "in": "path",
             "schema": {
@@ -758,12 +785,22 @@
         "tags": [
           "Sessions"
         ]
-      },
-      "patch": {
-        "operationId": "SessionsController_update",
+      }
+    },
+    "/sessions/student/{studentId}/game/{gameId}": {
+      "get": {
+        "operationId": "SessionsController_findByStudentAndGame",
         "parameters": [
           {
-            "name": "id",
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gameId",
             "required": true,
             "in": "path",
             "schema": {
@@ -771,16 +808,37 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSessionDto"
-              }
-            }
+        "responses": {
+          "200": {
+            "description": ""
           }
         },
+        "tags": [
+          "Sessions"
+        ]
+      }
+    },
+    "/sessions/students/{studentId}/games/{gameId}/active-session-check": {
+      "get": {
+        "operationId": "SessionsController_checkSessionExists",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -1149,10 +1207,6 @@
           "student_id",
           "game_id"
         ]
-      },
-      "UpdateSessionDto": {
-        "type": "object",
-        "properties": {}
       },
       "CreateGameDto": {
         "type": "object",

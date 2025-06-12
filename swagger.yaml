@@ -427,18 +427,11 @@ paths:
           description: ''
       tags: &ref_5
         - Sessions
+  /sessions/student/{studentId}:
     get:
-      operationId: SessionsController_findAll
-      parameters: []
-      responses:
-        '200':
-          description: ''
-      tags: *ref_5
-  /sessions/{id}:
-    get:
-      operationId: SessionsController_findOne
+      operationId: SessionsController_findAllByStudent
       parameters:
-        - name: id
+        - name: studentId
           required: true
           in: path
           schema:
@@ -447,20 +440,61 @@ paths:
         '200':
           description: ''
       tags: *ref_5
+  /sessions/{gameId}/{studentId}/high-score/{newScore}:
     patch:
-      operationId: SessionsController_update
+      operationId: SessionsController_updateHighScore
       parameters:
-        - name: id
+        - name: gameId
           required: true
           in: path
           schema:
             type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateSessionDto'
+        - name: studentId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: newScore
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /sessions/student/{studentId}/game/{gameId}:
+    get:
+      operationId: SessionsController_findByStudentAndGame
+      parameters:
+        - name: studentId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: gameId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /sessions/students/{studentId}/games/{gameId}/active-session-check:
+    get:
+      operationId: SessionsController_checkSessionExists
+      parameters:
+        - name: studentId
+          required: true
+          in: path
+          schema:
+            type: number
+        - name: gameId
+          required: true
+          in: path
+          schema:
+            type: number
       responses:
         '200':
           description: ''
@@ -724,9 +758,6 @@ components:
         - score
         - student_id
         - game_id
-    UpdateSessionDto:
-      type: object
-      properties: {}
     CreateGameDto:
       type: object
       properties:
