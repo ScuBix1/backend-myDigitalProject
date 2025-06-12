@@ -37,7 +37,7 @@ export class SessionsService {
 
     const student = await this.studentsRepository.findOne({
       where: { id: createSessionDto.student_id },
-      relations: ['tutor', 'tutorSubscription'],
+      relations: ['tutor', 'tutor.tutorSubscriptions'],
     });
 
     if (!student) {
@@ -78,8 +78,6 @@ export class SessionsService {
 
     return {
       session: plainToInstance(ResponseSessionDto, session),
-      game: game.id,
-      student: student.id,
     };
   }
 
@@ -102,9 +100,10 @@ export class SessionsService {
     );
   }
 
-  async updateHighScore(sessionId: number, newScore: number) {
+  async updateHighScore(gameId: number, studentId: number, newScore: number) {
     const session = await this.sessionsRepository.findOne({
-      where: { id: sessionId },
+      where: { game: { id: gameId }, student: { id: studentId } },
+      relations: ['game', 'student'],
     });
 
     if (!session) {
@@ -139,5 +138,16 @@ export class SessionsService {
     }
 
     return plainToInstance(ResponseSessionDto, session);
+  }
+
+  async hasActiveSession(studentId: number, gameId: number): Promise<boolean> {
+    const session = await this.sessionsRepository.findOne({
+      where: {
+        student: { id: studentId },
+        game: { id: gameId },
+      },
+    });
+
+    return !!session;
   }
 }
