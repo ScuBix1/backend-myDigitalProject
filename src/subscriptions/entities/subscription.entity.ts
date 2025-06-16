@@ -7,7 +7,7 @@ export class Subscription {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price!: number;
 
   @Column()

@@ -350,6 +350,29 @@
         ]
       }
     },
+    "/tutors/{tutorId}/subscription-status": {
+      "get": {
+        "operationId": "TutorsController_checkSubscriptionStatus",
+        "parameters": [
+          {
+            "name": "tutorId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tutors"
+        ]
+      }
+    },
     "/admins/sign-up": {
       "post": {
         "operationId": "AdminsController_create",
@@ -563,6 +586,18 @@
       }
     },
     "/subscriptions": {
+      "get": {
+        "operationId": "SubscriptionsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subscriptions"
+        ]
+      },
       "post": {
         "operationId": "SubscriptionsController_create",
         "parameters": [],

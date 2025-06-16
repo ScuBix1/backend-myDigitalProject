@@ -93,4 +93,14 @@ export class TutorsController {
   getMyTutorProfile(@GetJwtUserId() tutorId: string) {
     return this.tutorsService.findTutorById(+tutorId);
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('tutor')
+  @Get(':tutorId/subscription-status')
+  async checkSubscriptionStatus(
+    @Param('tutorId') tutorId: string,
+    @GetJwtUserId() jwtTutorId: string,
+  ) {
+    return this.tutorsService.checkSubscriptionStatus(+tutorId, +jwtTutorId);
+  }
 }
