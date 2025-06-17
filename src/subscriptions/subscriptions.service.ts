@@ -197,4 +197,10 @@ export class SubscriptionsService {
 
     return !!activeSub;
   }
+
+  async findAll() {
+    return await this.subscriptionsRepository.find({
+      order: { price: 'ASC' },
+    });
+  }
 }

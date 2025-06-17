@@ -205,6 +205,19 @@ paths:
         '200':
           description: ''
       tags: *ref_1
+  /tutors/{tutorId}/subscription-status:
+    get:
+      operationId: TutorsController_checkSubscriptionStatus
+      parameters:
+        - name: tutorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
   /admins/sign-up:
     post:
       operationId: AdminsController_create
@@ -331,6 +344,14 @@ paths:
           description: ''
       tags: *ref_2
   /subscriptions:
+    get:
+      operationId: SubscriptionsController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: &ref_3
+        - Subscriptions
     post:
       operationId: SubscriptionsController_create
       parameters: []
@@ -343,8 +364,7 @@ paths:
       responses:
         '201':
           description: ''
-      tags: &ref_3
-        - Subscriptions
+      tags: *ref_3
   /subscriptions/verify-expired:
     post:
       operationId: SubscriptionsController_verifyExpired

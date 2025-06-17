@@ -12,6 +12,7 @@ import { Admin } from 'src/admins/entities/admin.entity';
 import { MessageService } from 'src/message/message.service';
 import { ResponseStudentDto } from 'src/students/dto/response-student.dto';
 import { Student } from 'src/students/entities/student.entity';
+import { SubscriptionsService } from 'src/subscriptions/subscriptions.service';
 import { VerificationService } from 'src/verification/verification.service';
 import { Repository } from 'typeorm';
 import { StripeService } from '../stripe/stripe.service';
@@ -36,6 +37,7 @@ export class TutorsService {
     private MessageService: MessageService,
     private stripeService: StripeService,
     private jwtService: JwtService,
+    private subscriptionService: SubscriptionsService,
   ) {}
 
   async findOneByEmail(email: string) {
@@ -226,5 +228,21 @@ export class TutorsService {
     return plainToInstance(ResponseTutorDto, tutor, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async checkSubscriptionStatus(
+    tutorIdFromParam: number,
+    tutorIdFromJwt: number,
+  ): Promise<{ subscription_active: boolean }> {
+    if (tutorIdFromParam !== tutorIdFromJwt) {
+      throw new UnauthorizedException(
+        "Vous ne pouvez accéder qu'à vos données",
+      );
+    }
+
+    const hasSubscription =
+      await this.subscriptionService.hasActiveSubscription(tutorIdFromParam);
+
+    return { subscription_active: hasSubscription };
   }
 }
