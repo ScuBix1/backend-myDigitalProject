@@ -148,6 +148,7 @@ export class TutorsService {
       id: tutor.id,
       username: tutor.email,
       role: 'tutor',
+      customer_id: customerId,
     };
 
     const jwt = this.jwtService.sign(payload);
