@@ -75,8 +75,8 @@ export class StripeService {
         },
       ],
       mode: 'subscription',
-      success_url: `${this.configService.get('LOCAL_ORIGIN')}/tutor/dashboard`,
-      cancel_url: `${this.configService.get('LOCAL_ORIGIN')}/tutor/subscription`,
+      success_url: `${this.configService.get('REMOTE_ORIGIN')}/tutor/dashboard`,
+      cancel_url: `${this.configService.get('REMOTE_ORIGIN')}/tutor/subscription`,
     });
 
     const url = session.url;
