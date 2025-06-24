@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { Admin } from 'src/admins/entities/admin.entity';
+import { SubscriptionType } from 'src/constants/enums/subscriptions.enum';
 import { MessageService } from 'src/message/message.service';
 import { ResponseStudentDto } from 'src/students/dto/response-student.dto';
 import { Student } from 'src/students/entities/student.entity';
@@ -234,7 +235,10 @@ export class TutorsService {
   async checkSubscriptionStatus(
     tutorIdFromParam: number,
     tutorIdFromJwt: number,
-  ): Promise<{ subscription_active: boolean }> {
+  ): Promise<{
+    subscription_active: boolean;
+    type: SubscriptionType | undefined;
+  }> {
     if (tutorIdFromParam !== tutorIdFromJwt) {
       throw new UnauthorizedException(
         "Vous ne pouvez accéder qu'à vos données",
@@ -244,6 +248,9 @@ export class TutorsService {
     const hasSubscription =
       await this.subscriptionService.hasActiveSubscription(tutorIdFromParam);
 
-    return { subscription_active: hasSubscription };
+    return {
+      subscription_active: hasSubscription.is_active,
+      type: hasSubscription.type,
+    };
   }
 }
