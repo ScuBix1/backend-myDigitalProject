@@ -19,7 +19,7 @@ async function bootstrap() {
   app.use('/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
 
   app.enableCors({
-    origin: [process.env.LOCAL_ORIGIN, process.env.REMOTE_ORIGIN],
+    origin: [process.env.REMOTE_ORIGIN],
     credentials: true,
   });
   app.use(express.json());

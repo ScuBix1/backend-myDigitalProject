@@ -187,7 +187,9 @@ export class SubscriptionsService {
     };
   }
 
-  async hasActiveSubscription(tutorId: number): Promise<boolean> {
+  async hasActiveSubscription(
+    tutorId: number,
+  ): Promise<{ is_active: boolean; type: SubscriptionType | undefined }> {
     const activeSub = await this.tutorSubRepo.findOne({
       where: {
         tutor: { id: tutorId },
@@ -195,7 +197,7 @@ export class SubscriptionsService {
       },
     });
 
-    return !!activeSub;
+    return { is_active: !!activeSub, type: activeSub?.subscription.type };
   }
 
   async findAll() {
