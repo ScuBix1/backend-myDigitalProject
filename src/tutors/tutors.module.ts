@@ -1,5 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AdminsModule } from 'src/admins/admins.module';
 import { Admin } from 'src/admins/entities/admin.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { MessageService } from 'src/message/message.service';
@@ -24,6 +25,7 @@ import { TutorsService } from './tutors.service';
       Subscription,
       Student,
     ]),
+    forwardRef(() => AdminsModule),
     forwardRef(() => AuthModule),
   ],
   controllers: [TutorsController],
