@@ -26,7 +26,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/ScuBix1/backend-myDigitalProject:latest
+          tags: ghcr.io/ScuBix1/backend-mydigitalproject:latest
 
       - name: Trigger Render redeploy
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
