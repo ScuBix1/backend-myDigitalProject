@@ -195,6 +195,7 @@ export class SubscriptionsService {
         tutor: { id: tutorId },
         is_active: true,
       },
+      relations: ['subscription'],
     });
 
     return { is_active: !!activeSub, type: activeSub?.subscription.type };
