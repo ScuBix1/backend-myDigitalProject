@@ -16,9 +16,9 @@ import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
-    TutorsModule,
+    forwardRef(() => TutorsModule),
     PassportModule,
-    AdminsModule,
+    forwardRef(() => AdminsModule),
     StudentsModule,
     VerificationModule,
     MessageModule,

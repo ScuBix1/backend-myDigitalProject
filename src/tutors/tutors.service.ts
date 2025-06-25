@@ -160,9 +160,9 @@ export class TutorsService {
     };
   }
 
-  async findAllStudentsByTutor(tutor_id: number, jwtTutorId: string) {
+  async findAllStudentsByTutor(tutorId: number, jwtTutorId: string) {
     const tutor = await this.tutorsRepository.findOne({
-      where: { id: tutor_id },
+      where: { id: tutorId },
     });
 
     if (!tutor) {
@@ -252,5 +252,9 @@ export class TutorsService {
       subscription_active: hasSubscription.is_active,
       type: hasSubscription.type,
     };
+  }
+
+  async deleteTutor(tutorId: number) {
+    return this.tutorsRepository.delete({ id: tutorId });
   }
 }
