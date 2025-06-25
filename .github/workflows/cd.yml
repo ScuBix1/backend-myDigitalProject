@@ -24,7 +24,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
+          context: .
           push: true
           tags: ghcr.io/ScuBix1/backend-myDigitalProject:latest
 
