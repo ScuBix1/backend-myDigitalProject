@@ -246,7 +246,6 @@ export class StudentsService {
 
     const updated = await this.studentsRepository.save({
       ...student,
-      ...updateData,
     });
 
     return plainToInstance(ResponseStudentDto, updated, {
