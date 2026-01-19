@@ -16,5 +16,6 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true
-  }
+  },
+  "include": ["src/**/*.ts", "src/data-source.ts"]
 }
