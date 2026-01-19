@@ -120,7 +120,6 @@ export class StripeService {
           const customerId = session.customer as string;
           const subscriptionId = session.subscription as string;
 
-          //TODO: replace with the [const subscriptionId = session.subscription as string;] in prod
           const stripeSubscription = await this.stripe.subscriptions.retrieve(
             subscriptionId,
             {
