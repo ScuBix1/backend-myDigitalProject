@@ -38,7 +38,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new I18nValidationExceptionFilter());
 
-  if (process.env.NODE_ENV === 'prod') {
+  if (process.env.NODE_ENV !== 'prod') {
     const config = new DocumentBuilder()
       .setTitle('Math&Magique')
       .setDescription("Description de l'API de Math&Magique")
