@@ -75,6 +75,9 @@ export class TutorsService {
         admin: existingAdmin,
         password: hashedPassword,
         customer_id: null,
+        //verification du mail annulé en hébergeant render gratuit (envoie de mail smtp indispo)
+        email_verified_at: new Date(),
+        account_status: 'actif',
       });
 
       const savedTutor = await this.tutorsRepository.save(tutor);
