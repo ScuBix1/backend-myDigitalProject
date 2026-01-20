@@ -38,25 +38,27 @@ async function bootstrap() {
 
   app.useGlobalFilters(new I18nValidationExceptionFilter());
 
-  const config = new DocumentBuilder()
-    .setTitle('Math&Magique')
-    .setDescription("Description de l'API de Math&Magique")
-    .setVersion('1.0')
-    .addTag('Maths')
-    .build();
+  if (process.env.NODE_ENV !== 'prod') {
+    const config = new DocumentBuilder()
+      .setTitle('Math&Magique')
+      .setDescription("Description de l'API de Math&Magique")
+      .setVersion('1.0')
+      .addTag('Maths')
+      .build();
 
-  const documentFactory = SwaggerModule.createDocument(app, config);
+    const documentFactory = SwaggerModule.createDocument(app, config);
 
-  if (documentFactory) {
-    writeFileSync('./swagger.json', JSON.stringify(documentFactory, null, 2));
-    writeFileSync('./swagger.yaml', yaml.dump(documentFactory));
-  } else {
-    console.error(
-      'Erreur : `document` est undefined, vérifie la configuration Swagger.',
-    );
+    if (documentFactory) {
+      writeFileSync('./swagger.json', JSON.stringify(documentFactory, null, 2));
+      writeFileSync('./swagger.yaml', yaml.dump(documentFactory));
+    } else {
+      console.error(
+        'Erreur : `document` est undefined, vérifie la configuration Swagger.',
+      );
+    }
+
+    SwaggerModule.setup('api', app, documentFactory);
   }
-
-  SwaggerModule.setup('api', app, documentFactory);
 
   await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
